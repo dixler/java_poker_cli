@@ -41,24 +41,13 @@ public class Deck {
 		child.removeAll();
 		return;
 	}
+	public boolean contains(Card target){
+		return card_list.contains(target);
+	}
 	// starts from 0
 	public Card extract_ith_card(int index) {
-		Deck temp = new Deck();
-		Card drawn;
-
-		// split the deck until we get the card we want
-		for(int i = 0; i < index; i++) {
-			temp.place_card_bottom(draw_card());
-		}
-
-		// draw a card
-		drawn = draw_card();
-
-		// put the decks back together
-		temp.combine(this);
-		combine(temp);
-		
-		return drawn;
+		num_cards += -1;
+		return card_list.remove(index);
 	}
 	public void shuffle_deck(Random rng) {
 		Deck shuffled = new Deck();

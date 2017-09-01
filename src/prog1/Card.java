@@ -2,20 +2,30 @@ package prog1;
 
 public class Card {
 	
-	private char _rank;
-	private char _suit;
+	private char rank;
+	private char suit;
 
-	public Card(char rank, char suit) {
+	public Card(char my_rank, char my_suit) {
 		// TODO Auto-generated constructor stub
-		_rank = rank;
-		_suit = suit;
+		rank = my_rank;
+		suit = my_suit;
 		return;
 	}
+	public boolean equals(Object other) {
+		return (((Card)other).rank == this.rank && ((Card)other).suit == this.suit);
+	}
 	public char get_rank() {
-		return _rank;
+		return rank;
 	}
 	public char get_suit() {
-		return _suit;
+		return suit;
 	}
-
+	public void set_rank(char new_rank) {
+		rank = new_rank;
+		return;
+	}
+	public void set_suit(char new_suit) {
+		suit = new_suit;
+		return;
+	}
 }
