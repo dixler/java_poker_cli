@@ -8,77 +8,88 @@ public class GameType {
 		// TODO Auto-generated method stub
 		Deck game_deck = make_deck();
 		Deck discard_deck = new Deck();
-		System.out.printf("deck_len: %d\n", game_deck.get_size());
+		GamePlayer human = new GamePlayer();
+		int num_bots = 3; // have dynamically determined at runtime
+		GameBot[] bots = new GameBot[num_bots];
+		for(int i = 0; i < num_bots; i++) {
+			bots[i] = new GameBot();
+		}
 		print_deck(game_deck);
-		System.out.printf("deck_len: %d\n", game_deck.get_size());
 		print_deck(game_deck);
-		System.out.printf("deck_len: %d\n", game_deck.get_size());
 		shuffle_deck(game_deck);
-		System.out.printf("deck_len: %d\n", game_deck.get_size());
 		print_deck(game_deck);
-		System.out.printf("deck_len: %d\n", game_deck.get_size());
+		
+
+		// TODO implement discard and draw sequence
+
+		for(int i = 0; i < 5; i++) {
+			Card	drawn = game_deck.draw_card();
+			human.take_card(drawn);
+			for(int j = 0; j < num_bots; j++) {
+						drawn = game_deck.draw_card();
+						bots[j].take_card(drawn);
+			}
+		}
+
+		System.out.printf("HAND: human\n");
+		human.print_hand();
+		for(int i = 0; i < num_bots; i++) {
+			System.out.printf("HAND: bot %d\n", i);
+			bots[i].print_hand();
+		}
+		
+		print_deck(game_deck);
+		
+
+		
+
+		
+		
+		//
+		
+		
+		
+		
+
 		return;
 	}
 	private static Deck make_deck() {
+		System.out.println("make_deck()");
+
 		char[] suit_map = {	'C', 'D', 'S', 'H'};
 
-		char[] rank_map = {	'A', '1', '2', '3', 
-							'4', '5', '6', '7', 
-							'8', '9', 'T', 'J', 
-							'Q', 'K'
-							};
-		System.out.println("make_deck()");
+		char[] rank_map = {	'A', '2', '3', '4', 
+							'5', '6', '7', '8', 
+							'9', 'T', 'J', 'Q', 
+							'K'};
 		Deck game_deck = new Deck();
+
+		// create a card and then put it into the deck
 		for(int suit = 0; suit < 4; suit++) {
-			for(int rank = 1; rank < 14; rank++) {
+			for(int rank = 0; rank < 13; rank++) {
 				Card my_card = new Card(rank_map[rank], suit_map[suit]);
 				game_deck.place_card(my_card);
-				//System.out.printf("card: suit: %d rank: %d\n", my_card.get_suit(), my_card.get_rank());
 			}
 		}
+
 		return game_deck;
 	}
 	
 
 	private static void shuffle_deck(Deck game_deck) {
 		System.out.println("shuffle_deck()");
-		Deck shuffled = new Deck();
-		for(int i = game_deck.get_size(); i > 0; --i) {
-			int random_index = rng.nextInt(i); // TODO check edge case
-			Card drawn = extract_ith_card(game_deck, random_index);
-			shuffled.place_card(drawn); // for 401 figure out what the shuffling problem's runtime is
-		}
-		game_deck.combine(shuffled);
+		
+		game_deck.shuffle_deck(rng);
+
 		return;
 	}
+
 	private static void print_deck(Deck game_deck) {
 		System.out.println("print_deck()");
-		// draw a card, print the card, then put it at the bottom
-		for(int i = 0; i < game_deck.get_size(); i++) {
-			Card drawn = game_deck.draw_card();
-				System.out.printf("%c of %c\n", drawn.get_rank(), drawn.get_suit());
-			game_deck.place_card_bottom(drawn);
-		}
+		System.out.printf("deck_len: %d\n", game_deck.get_size()); // TODO remove this
+		game_deck.print();
 		return;
 	}
 	// starts from 0
-	private static Card extract_ith_card(Deck game_deck, int index) {
-		Deck temp = new Deck();
-		Card drawn;
-
-		// split the deck until we get the card we want
-		for(int i = 0; i < index; i++) {
-			temp.place_card_bottom(game_deck.draw_card());
-		}
-
-		// draw a card
-		drawn = game_deck.draw_card();
-
-		// put the decks back together
-		temp.combine(game_deck);
-		game_deck.combine(temp);
-		
-		return drawn;
-	}
 
 }

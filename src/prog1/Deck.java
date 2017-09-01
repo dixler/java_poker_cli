@@ -1,5 +1,6 @@
 package prog1;
 import java.util.LinkedList;
+import java.util.Random;
 
 public class Deck {
 	private LinkedList<Card> card_list = new LinkedList<Card>();
@@ -38,6 +39,48 @@ public class Deck {
 		// handle deck lengths
 		num_cards += child.num_cards;
 		child.removeAll();
+		return;
+	}
+	// starts from 0
+	public Card extract_ith_card(int index) {
+		Deck temp = new Deck();
+		Card drawn;
+
+		// split the deck until we get the card we want
+		for(int i = 0; i < index; i++) {
+			temp.place_card_bottom(draw_card());
+		}
+
+		// draw a card
+		drawn = draw_card();
+
+		// put the decks back together
+		temp.combine(this);
+		combine(temp);
+		
+		return drawn;
+	}
+	public void shuffle_deck(Random rng) {
+		Deck shuffled = new Deck();
+
+		// extract a random card from the deck then place it into
+		// a temporary deck
+		for(int i = get_size(); i > 0; --i) {
+			int random_index = rng.nextInt(i);
+			Card drawn = extract_ith_card(random_index);
+			shuffled.place_card(drawn); // for 401 figure out what the shuffling problem's runtime is
+		}
+		// put the decks together
+		combine(shuffled);
+		return;
+	}
+	public void print() {
+		// draw a card, print the card, then put it at the bottom
+		for(int i = 0; i < num_cards; i++) {
+			Card drawn = draw_card();
+				System.out.printf("%c of %c\n", drawn.get_rank(), drawn.get_suit());
+			place_card_bottom(drawn);
+		}
 		return;
 	}
 	private void removeAll(){
