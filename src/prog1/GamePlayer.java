@@ -1,7 +1,7 @@
 package prog1;
 
 public class GamePlayer {
-	Deck my_hand = new Deck();
+	private Deck my_hand = new Deck();
 	
 
 	public GamePlayer() {

@@ -1,7 +1,7 @@
 package prog1;
 
 public class GameBot {
-	Deck my_hand = new Deck();
+	private Deck my_hand = new Deck();
 	private int working;
 
 	public GameBot() {
@@ -14,27 +14,25 @@ public class GameBot {
 		my_hand.place_card(dealt);
 		return;
 	}
+	public int hand_size() {
+		return my_hand.get_size();
+	}
 	private int bot_logic() {
 		/*index
 		 * TODO bot logic
 		 * 
 		 */
-		// when done with swaps
-		working = 0;
-		return -1;
+		if(/* we don't want to swap anymore */ 1 == 1);
+			working = 0;
+		return 0;
 	}
 	public Card return_card(int index){
 		return my_hand.extract_ith_card(index);
 	}
-	public Card swap() {
+	public int swap() {
 		// This is kinda dumb since we can just have a GamePlayer class manage two different
 		// methods of interacting with the game without the need of a separate class
-		bot_logic();
-		Card empty;
-		if(working == 1) {
-			return return_card(bot_logic());
-		}
-		return empty;
+		return bot_logic();
 	}
 	// TODO REMOVE DEBUG
 	public void print_hand() {
