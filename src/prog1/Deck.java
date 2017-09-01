@@ -2,14 +2,15 @@ package prog1;
 import java.util.LinkedList;
 
 public class Deck {
-	LinkedList<Card> card_list = new LinkedList<Card>();
-	int num_cards;
-
-   
+	private LinkedList<Card> card_list = new LinkedList<Card>();
+	private int num_cards;
 
 	public Deck() {
 		num_cards = 0;
 		return;
+	}
+	public int get_size() {
+		return num_cards;
 	}
 	public void place_card(Card new_card){
 		card_list.addFirst(new_card);
@@ -33,19 +34,17 @@ public class Deck {
 		// 
 		card_list.addAll(child.card_list);
 		// clear old deck
-		child.removeAll();
 
 		// handle deck lengths
 		num_cards += child.num_cards;
-		child.num_cards = 0;
+		child.removeAll();
 		return;
 	}
-	public void removeAll(){
+	private void removeAll(){
 		card_list.clear();
 		num_cards = 0;
 		return;
 	}
-	//public Card draw_card(int index){
-	//}
+
 
 }
