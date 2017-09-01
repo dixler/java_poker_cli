@@ -3,9 +3,15 @@ package prog1;
 public class GamePlayer {
 	private Deck my_hand = new Deck();
 	private boolean working;
+	private int player_id;
 
-	public GamePlayer() {
+	public GamePlayer(int id) {
 		working = true;
+		player_id = id;
+		return;
+	}
+	public int player_id() {
+		return player_id;
 	}
 	public void start_working() { // TODO
 		working = true;

@@ -4,6 +4,7 @@ import java.util.Random;
 public class GameType {
 	static private Random rng = new Random();
 	static int num_bots = 1; // have dynamically determined at runtime
+	static int num_players = num_bots + 1; // have dynamically determined at runtime
 	static int num_cards = 5;
 	static int max_swaps = 3;
 	static Deck game_deck;
@@ -13,13 +14,14 @@ public class GameType {
 		// TODO Auto-generated method stub
 		game_deck = make_deck();
 		discard_deck = new Deck();
-		GamePlayer human = new GamePlayer();
 
-
-		GameBot[] bots = new GameBot[num_bots];
-		for(int i = 0; i < num_bots; i++) {
-			bots[i] = new GameBot();
+		GamePlayer[] players = new GamePlayer[num_players];
+		//players[0] = new GamePlayer();
+		// TODO add human player
+		for(int i = 0; i < num_players; i++) {
+			players[i] = new GameBot(i);
 		}
+		// TODO handle too many players
 		print_deck(game_deck);
 		shuffle_deck(game_deck);
 		print_deck(game_deck);
@@ -29,7 +31,7 @@ public class GameType {
 		for(int round = 0; round < 52; round++) {
 			print_deck(game_deck);
 
-			deal_hands(bots, human);
+			round_init(players);
 			// Swap cards
 			for(int part = 0; part < 2; part++) {
 				/*
@@ -37,41 +39,36 @@ public class GameType {
 				 */
 				//*
 				System.out.printf("PRE SWAP\n");
-				print_hands(bots, human);
-				for(int i = 0; i < num_bots; i++) {
-					bots[i].start_working();
+				print_hands(players);
+				for(int i = 0; i < num_players; i++) {
+					players[i].start_working();
 					int num_discarded = 0;
 
-					while(bots[i].is_working()) {
+					while(players[i].is_working()) {
 						// handle ace exception
-						if(		bots[i].hand_size() > (num_cards - max_swaps) && 
-								(	bots[i].hand_contains('A', 'C') ||
-									bots[i].hand_contains('A', 'D') ||
-									bots[i].hand_contains('A', 'S') ||
-									bots[i].hand_contains('A', 'H')
-								)) {
-							System.out.printf("Computer Hand contains Ace\n");
+						if(		players[i].hand_size() > (num_cards - max_swaps)
+							&&	has_ace(players[i])) {
 
-							
+							System.out.printf("Computer Hand contains Ace\n");
 						}
 							
 						/*
 						 * 
 						 * TODO
 						 */
-						int returned = bots[i].discard();
-						System.out.printf("length: %d\n", bots[i].hand_size());
+						int returned = players[i].discard();
+						System.out.printf("length: %d\n", players[i].hand_size());
 						// swap automatically extracts a card so 
 						// we need to replace it
 						// if the bot is still picking cards to remove, then returned
 						// is a card we want to discard
-						if(bots[i].is_working()) {
-							discard_deck.place_card(bots[i].return_card(returned));
+						if(players[i].is_working()) {
+							discard_deck.place_card(players[i].return_card(returned));
 							num_discarded += 1;
 						}
 					}
 					// draw cards until hand is full again
-					while(bots[i].hand_size() < num_cards) {
+					while(players[i].hand_size() < num_cards) {
 						// if we run out of cards somehow, we 
 						// shuffle // the discard deck and use 
 						// it
@@ -83,12 +80,12 @@ public class GameType {
 							game_deck.combine(discard_deck);
 						}
 						// deal a card from the deck
-						bots[i].take_card(game_deck.draw_card());
+						players[i].take_card(game_deck.draw_card());
 						
 					}
 				}
 				System.out.printf("POST SWAP\n");
-				print_hands(bots, human);
+				print_hands(players);
 				//*/
 			}
 
@@ -101,32 +98,13 @@ public class GameType {
 			
 			// Discard the cards for all of the players
 			for(int i = 0; i < num_cards; i++) {
-				discard_deck.place_card(human.return_card(0));
-				for(int j = 0; j < num_bots; j++) {
-					discard_deck.place_card(bots[j].return_card(0));
+				for(int j = 0; j < num_players; j++) {
+					discard_deck.place_card(players[j].return_card(0));
 				}
 			}
 
 			// if we don't have enough cards to play another round
-			if(game_deck.get_size() < (num_bots + 1) * num_cards) {
-				// Place the shuffled discard deck under the deck
-				game_deck.combine(discard_deck);
-				// Shuffle the deck 
-				game_deck.shuffle_deck(rng);
-			}
 		}
-
-		
-
-		
-
-		
-		
-		//
-		
-		
-		
-		
 
 		return;
 	}
@@ -166,23 +144,30 @@ public class GameType {
 		game_deck.print();
 		return;
 	}
-	// starts from 0
-	private static void print_hands(GameBot[] bots, GamePlayer human) {
-		System.out.printf("HAND: human\n");
-		human.print_hand();
-		for(int i = 0; i < num_bots; i++) {
-			System.out.printf("HAND: bot %d\n", i);
-			bots[i].print_hand();
+	// DEBUG
+	private static void print_hands(GamePlayer[] players) {
+		for(int i = 0; i < num_players; i++) {
+			System.out.printf("Player %d's hand':\n", i);
+			players[i].print_hand();
 		}
+		return;
 	}
-	private static void deal_hands(GameBot[] bots, GamePlayer human) {
+	private static void round_init(GamePlayer[] players) {
+		// if we don't have enough cards after the last round
+		// add the discard pile to the deck
+		if(game_deck.get_size() < num_players * num_cards) {
+			// Place the discard deck under the deck
+			game_deck.combine(discard_deck);
+			// Shuffle the deck 
+			game_deck.shuffle_deck(rng);
+		}
+
 		// deal the cards
 		for(int i = 0; i < num_cards; i++) {
-			Card	drawn = game_deck.draw_card();
-			human.take_card(drawn);
-			for(int j = 0; j < num_bots; j++) {
-						drawn = game_deck.draw_card();
-						bots[j].take_card(drawn);
+			Card	drawn;
+			for(int j = 0; j < num_players; j++) {
+				drawn = game_deck.draw_card();
+				players[j].take_card(drawn);
 			}
 		}
 	}

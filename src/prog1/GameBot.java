@@ -1,6 +1,9 @@
 package prog1;
 
 public class GameBot extends GamePlayer{
+	public GameBot(int id) {
+		super(id);
+	}
 	private int bot_logic() {
 		int id_discard = -1;
 		// TODO determine optimal card to swap out
