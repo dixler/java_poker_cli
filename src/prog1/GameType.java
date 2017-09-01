@@ -23,9 +23,9 @@ public class GameType {
 		print_deck(game_deck);
 		
 
-		// TODO implement discard and draw sequence
+		// Begin game
 		
-		for(int round = 0; round < 2; round++) {
+		for(int round = 0; round < 99; round++) {
 
 			// Draw the cards for all of the players
 			for(int i = 0; i < num_cards; i++) {
@@ -36,13 +36,40 @@ public class GameType {
 							bots[j].take_card(drawn);
 				}
 			}
+			// Swap cards
+			for(int part = 0; part < 2; part++) {
+				/*
+				 * AI calculate discard
+				 */
+				/*
+				for(int i = 0; i < num_bots; i++) {
+						Card returned = bots[i].swap();
+						if(bots[i].is_working() == 0) {
+							System.out.printf("length: %d\n", bots[i].my_hand.get_size());
+							// swap automatically extracts a card so 
+							// we need to replace it
+							//bots[i].take_card(returned);
+						}
+						else {
+							discard_deck.place_card(returned);
+						}
+				}
+				*/
+			}
 
+					
+
+			/*
+			 * debug hand drawing
+			 */
 			System.out.printf("HAND: human\n");
 			human.print_hand();
 			for(int i = 0; i < num_bots; i++) {
 				System.out.printf("HAND: bot %d\n", i);
 				bots[i].print_hand();
 			}
+			/*
+			*/
 			
 			print_deck(game_deck);
 			// Discard the cards for all of the players
