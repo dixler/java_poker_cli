@@ -60,8 +60,10 @@ public class GameType {
 					int id_discarded;
 					do {
 						// PRE DISCARD TURN //////////////////////////////////////
+						/*
 						System.out.printf("PRE DISCARD\n");
 						players[i].print_hand();
+						//*/
 						//////////////////////////////////////////////////////////
 						//System.out.printf("length: %d\n", players[i].hand_size());
 
@@ -70,15 +72,26 @@ public class GameType {
 						if(id_discarded != -1) {
 							discard_deck.place_card(players[i].discard(id_discarded));
 							num_discarded += 1;
+							/*
+							System.out.printf("DISCARDIND\n");
+							System.out.printf("DISCARDIND\n");
+							System.out.printf("DISCARDIND\n");
+							System.out.printf("DISCARDIND\n");
+							System.out.printf("DISCARDIND\n");
+							System.out.printf("DISCARDIND\n");
+							System.out.printf("DISCARDIND\n");
+							//*/
 						}
 
 						// POST DISCARD TURN //////////////////////////////////////
+						/*
 						System.out.printf("POST DISCARD\n");
 						players[i].print_hand();
+						//*/
 						///////////////////////////////////////////////////////////
 
 					}while(id_discarded != -1 && num_discarded < (max_discard + ace_exception(players[i])));
-
+					System.out.printf("Computer Player %d discarded %d cards\n", players[i].get_player_id(), num_discarded);
 					
 					
 					
@@ -101,7 +114,7 @@ public class GameType {
 				}
 				//*/
 			}
-			//*
+			/*
 			for(int i = 0; i < rank_map.length; i++) {
 				HACK_straight(players[0], i);
 				print_hands(players);
