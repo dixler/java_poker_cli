@@ -1,8 +1,8 @@
 package prog1;
 
 public class GameBot extends GamePlayer{
-	public GameBot(int id) {
-		super(id);
+	public GameBot(int id, int num_cards) {
+		super(id, num_cards);
 	}
 	private int bot_logic() {
 		int id_discard = -1;
@@ -16,9 +16,15 @@ public class GameBot extends GamePlayer{
 		}
 		return id_discard;
 	}
-	public int discard() {
+	public int turn() {
 		// This is kinda dumb since we can just have a GamePlayer class manage two different
 		// methods of interacting with the game without the need of a separate class
 		return bot_logic();
+	}
+	public boolean is_straight() {
+		return false;
+	}
+	public boolean is_flush() {
+		return false;
 	}
 }

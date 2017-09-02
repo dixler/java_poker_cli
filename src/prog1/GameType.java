@@ -35,7 +35,7 @@ public class GameType {
 		
 		
 		for(int i = 0; i < num_players; i++) {
-			players[i] = new GameBot(i);
+			players[i] = new GameBot(i, num_cards);
 		}
 
 		// TODO handle too many players
@@ -50,12 +50,12 @@ public class GameType {
 
 			round_init(players);
 			// Discard cards
+			print_hands(players);
 			for(int part = 0; part < 2; part++) {
 				/*
 				 * AI calculate discard(move to GameBot in future)
 				 */
 				//*
-				print_hands(players);
 				for(int i = 0; i < num_players; i++) {
 					players[i].start_working();
 					int num_discarded = 0;
@@ -72,11 +72,11 @@ public class GameType {
 						 * 
 						 * TODO
 						 */
-						int returned = players[i].discard();
+						int returned = players[i].turn();
 						//System.out.printf("length: %d\n", players[i].hand_size());
 
 						if(players[i].is_working()) {
-							discard_deck.place_card(players[i].return_card(returned));
+							discard_deck.place_card(players[i].discard(returned));
 							num_discarded += 1;
 						}
 					}
@@ -93,7 +93,7 @@ public class GameType {
 							game_deck.combine(discard_deck);
 						}
 						// deal a card from the deck
-						players[i].take_card(game_deck.draw_card());
+						players[i].draw_card(game_deck.draw_card());
 						
 					}
 				}
@@ -108,9 +108,9 @@ public class GameType {
 			*/
 			
 			// Discard the cards for all of the players
-			for(int i = 0; i < num_cards; i++) {
+			for(int i = 1; i <= num_cards; i++) {
 				for(int j = 0; j < num_players; j++) {
-					discard_deck.place_card(players[j].return_card(0));
+					discard_deck.place_card(players[j].discard(num_cards - i));
 				}
 			}
 
@@ -171,13 +171,14 @@ public class GameType {
 			Card	drawn;
 			for(int j = 0; j < num_players; j++) {
 				drawn = game_deck.draw_card();
-				players[j].take_card(drawn);
+				//System.out.printf("round init: dealing: %c of %c\n", drawn.get_rank(), drawn.get_suit());
+				players[j].draw_card(drawn);
 			}
 		}
 	}
 	private static boolean has_ace(GamePlayer player) {
 		for(int i = 0; i < suit_map.length; i++) {
-			if(player.hand_contains('A', suit_map[i]))
+			if(player.is_holding('A', suit_map[i]))
 				return true;
 		}
 		return false;

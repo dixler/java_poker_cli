@@ -1,11 +1,12 @@
 package prog1;
 
 public class GamePlayer {
-	private Deck my_hand = new Deck();
+	private Hand my_hand;
 	private boolean working;
 	private int player_id;
 
-	public GamePlayer(int id) {
+	public GamePlayer(int id, int num_cards) {
+		my_hand = new Hand(num_cards);
 		working = true;
 		player_id = id;
 		return;
@@ -24,8 +25,8 @@ public class GamePlayer {
 	public boolean is_working() {
 		return working;
 	}
-	public void take_card(Card dealt) {
-		my_hand.place_card(dealt);
+	public void draw_card(Card dealt) {
+		my_hand.draw(dealt);
 		return;
 	}
 	public int hand_size() {
@@ -40,23 +41,26 @@ public class GamePlayer {
 			working = false;
 		return 0;
 	}
-	public Card return_card(int index){
-		return my_hand.extract_ith_card(index);
+	public Card discard(int index){
+		return my_hand.discard(index);
 	}
-	public int discard() {
+	public int turn() {
 		// This is kinda dumb since we can just have a GamePlayer class manage two different
 		// methods of interacting with the game without the need of a separate class
 		return ui();
 	}
 	// TODO make more portable
-	public boolean hand_contains(char rank, char suit) {
-		Card target = new Card(rank, suit);
-		return my_hand.contains(target);
+	public boolean is_holding(char rank, char suit) {
+		return my_hand.find(rank, suit) != -1;
 	}
 	// TODO REMOVE DEBUG
 	public void print_hand() {
-		my_hand.print();
+		// draw a card, print the card, then put it at the bottom
+		for(int i = 0; i < my_hand.get_max_cards(); i++) {
+			System.out.printf("%c of %c\n", my_hand.peek(i).get_rank(), my_hand.peek(i).get_suit());
+		}
 		return;
+		//my_hand.print();
 	}
 
 }

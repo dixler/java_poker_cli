@@ -41,9 +41,6 @@ public class Deck {
 		child.removeAll();
 		return;
 	}
-	public boolean contains(Card target){
-		return card_list.contains(target);
-	}
 	// starts from 0
 	public Card extract_ith_card(int index) {
 		num_cards += -1;
