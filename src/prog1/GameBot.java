@@ -7,16 +7,16 @@ public class GameBot extends GamePlayer{
 	
 	
 	private int handle_one_pair() {
-		return 0;
+		return -1;
 	}
 	private int handle_two_pair() {
-		return 0;
+		return -1;
 	}
 	private int handle_three_of_a_kind() {
-		return 0;
+		return -1;
 	}
 	private int handle_four_of_a_kind() {
-		return 0;
+		return -1;
 	}
 	/*
 	 * Return Values
@@ -67,32 +67,49 @@ public class GameBot extends GamePlayer{
 
 			// 4 cards same suit?
 			if(this.is_flush(4)) {
+				/*
 				System.out.printf("%d has 4 FLUSH!!!!!!!!!!!!!!11\n", this.player_id());
 				this.print_hand();
 				System.out.printf("Words");
+				//*/
 				// discard non similar
 			}
 			
 			// 4 cards in sequence?
 			else if(this.is_straight(4)) {
+				/*
 				System.out.printf("%d has 4 STRAIGHT!!!!!!!!!!!!!!11\n", this.player_id());
 				this.print_hand();
 				System.out.printf("Words");
+				//*/
 				// discard non similar
 			}
 			
 			else {
-				boolean has_ace = false;
-				int ace_index = -1;
+				System.out.printf("High Card!\n");
+				boolean has_ace = (score == -1);
+				int high_card_index = 0;
 				for(int i = 0; i < this.my_hand.get_num_cards(); i++) {
-					if(this.my_hand.peek(i).get_rank() == 0) {
-						has_ace = true;
-						ace_index = i;
+					// TODO remap scores to sane numbers
+					// remap score to rank_map
+					//		score	rank_map[rank]		rank	
+					//		-1		K				->	12
+					//		-2		Q				->	11
+					//		-3		J				->	10
+					//		...		...					...
+					//		-13		A				->	0
+					// find func(score) = i;
+					// func(score) = -1*score - 1
+
+					if(this.my_hand.peek(i).get_rank() == -1*score - 1) {
+						high_card_index = i;
 						break;
 					}
 				}
 				if(has_ace) {
-					if(ace_index > 0) {
+					System.out.printf("Ace Exception\n");
+					this.print_hand();
+					if(high_card_index > 0) {
 						// we want to discard 0 as to move the ace index down
 						id_discard = 0;
 					}
@@ -103,20 +120,9 @@ public class GameBot extends GamePlayer{
 						id_discard = 1;
 					}
 				}
-				
-				
+				else {
+				}
 			}
-
-			
-		}
-			
-		// TODO determine optimal card to swap out
-		if(id_discard >= 0) {
-			
-		}
-		else{
-			// when done with swaps
-			stop_working();
 		}
 		return id_discard;
 	}

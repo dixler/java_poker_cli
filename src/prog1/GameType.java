@@ -6,7 +6,7 @@ public class GameType {
 	static int num_bots = 3; // have dynamically determined at runtime
 	static int num_players = num_bots + 1; // have dynamically determined at runtime
 	static int num_cards = 5;
-	static int max_swaps = 3;
+	static int max_discard = 3;
 	static Deck game_deck;
 	static Deck discard_deck;
 	static char[] suit_map = {	'C', 'D', 'S', 'H'};
@@ -53,35 +53,36 @@ public class GameType {
 			// Discard cards
 			//print_hands(players);
 			for(int part = 0; part < 2; part++) {
-				/*
-				 * AI calculate discard(move to GameBot in future)
-				 */
-				//*
+
+				// For each player allow them to discard
 				for(int i = 0; i < num_players; i++) {
-					players[i].start_working();
 					int num_discarded = 0;
-
-					while(players[i].is_working()) {
-						// handle ace exception
-						if(		players[i].hand_size() > (num_cards - max_swaps)
-							&&	has_ace(players[i])) {
-
-							//System.out.printf("Player %d has an Ace\n", players[i].player_id());
-						}
-							
-						/*
-						 * 
-						 * TODO
-						 */
-						int returned = players[i].turn();
+					int id_discarded;
+					do {
+						// PRE DISCARD TURN //////////////////////////////////////
+						System.out.printf("PRE DISCARD\n");
+						players[i].print_hand();
+						//////////////////////////////////////////////////////////
 						//System.out.printf("length: %d\n", players[i].hand_size());
 
-						if(players[i].is_working()) {
-							discard_deck.place_card(players[i].discard(returned));
+						id_discarded = players[i].turn();
+
+						if(id_discarded != -1) {
+							discard_deck.place_card(players[i].discard(id_discarded));
 							num_discarded += 1;
 						}
-					}
-					// draw cards until hand is full again
+
+						// POST DISCARD TURN //////////////////////////////////////
+						System.out.printf("POST DISCARD\n");
+						players[i].print_hand();
+						///////////////////////////////////////////////////////////
+
+					}while(id_discarded != -1 && num_discarded < (max_discard + ace_exception(players[i])));
+
+					
+					
+					
+					// deal cards to player until hand is full again
 					while(players[i].hand_size() < num_cards) {
 						// if we run out of cards somehow, we 
 						// shuffle // the discard deck and use 
@@ -228,12 +229,12 @@ public class GameType {
 			}
 		}
 	}
-	private static boolean has_ace(GamePlayer player) {
+	private static int ace_exception(GamePlayer player) {
 		for(int i = 0; i < suit_map.length; i++) {
 			if(player.is_holding('A', suit_map[i]))
-				return true;
+				return 1;
 		}
-		return false;
+		return 0;
 
 	}
 	private static void HACK_straight(GamePlayer player, int index) {

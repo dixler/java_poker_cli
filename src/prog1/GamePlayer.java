@@ -2,28 +2,15 @@ package prog1;
 
 public class GamePlayer {
 	Hand my_hand; //make private later
-	private boolean working;
 	private int player_id;
 
 	public GamePlayer(int id, int num_cards) {
 		my_hand = new Hand(num_cards);
-		working = true;
 		player_id = id;
 		return;
 	}
 	public int player_id() {
 		return player_id;
-	}
-	public void start_working() { // TODO
-		working = true;
-		return;
-	}
-	public void stop_working() { // TODO
-		working = false;
-		return;
-	}
-	public boolean is_working() {
-		return working;
 	}
 	public void draw_card(Card dealt) {
 		my_hand.draw(dealt);
@@ -33,13 +20,12 @@ public class GamePlayer {
 		return my_hand.get_num_cards();
 	}
 	private int ui() {
+		int id_discard = -1;
 		/*
 		 * TODO interface
 		 */
-		// when done with swaps
-		if(/* we don't want to swap anymore */ 1 == 1);
-			working = false;
-		return 0;
+		// set id_discard to the card you want to discard
+		return id_discard;
 	}
 	public Card discard(int index){
 		return my_hand.discard(index);
