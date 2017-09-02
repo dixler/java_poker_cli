@@ -39,17 +39,19 @@ public class GameType {
 		}
 
 		// TODO handle too many players
-		print_deck(game_deck);
-		//shuffle_deck(game_deck);
-		print_deck(game_deck);
+		//print_deck(game_deck);
+		shuffle_deck(game_deck);
+		//print_deck(game_deck);
 
 		// Begin game
 		
 		for(int round = 0; round < 2; round++) {
+			System.out.printf("Round %d\n", round);
 			//print_deck(game_deck);
 
 			round_init(players);
 			// Discard cards
+			//print_hands(players);
 			for(int part = 0; part < 2; part++) {
 				/*
 				 * AI calculate discard(move to GameBot in future)
@@ -98,6 +100,7 @@ public class GameType {
 				}
 				//*/
 			}
+			/*
 			for(int i = 0; i < rank_map.length; i++) {
 				HACK_straight(players[0], i);
 				print_hands(players);
@@ -107,13 +110,12 @@ public class GameType {
 				print_hands(players);
 			}
 
-			HACK_flush(players[0], 0);
-			HACK_straight(players[0], 9);
 			print_hands(players);
 
 			for(int i = 0; i < suit_map.length; i++) {
 				print_hands(players);
 			}
+			//*/
 			print_hands(players);
 
 			// Discard the cards for all of the players
@@ -135,7 +137,7 @@ public class GameType {
 		// create a card and then put it into the deck
 		for(int suit = 0; suit < suit_map.length; suit++) {
 			for(int rank = 0; rank < rank_map.length; rank++) {
-				Card my_card = new Card(rank_map[rank], suit_map[suit]);
+				Card my_card = new Card(rank, suit);
 				game_deck.place_card(my_card);
 			}
 		}
@@ -160,7 +162,7 @@ public class GameType {
 	// DEBUG
 	private static void print_hands(GamePlayer[] players) {
 		for(int i = 0; i < num_players; i++) {
-			switch(players[i].my_hand.eval_score()) {
+			switch(players[i].eval_score()) {
 				case 7:
 					System.out.printf("Player %d's hand':\n", i);
 					players[i].print_hand();
@@ -237,14 +239,14 @@ public class GameType {
 	private static void HACK_straight(GamePlayer player, int index) {
 		System.out.printf("HACK_test_straight\n");
 		for(int i = 0; i < num_cards; i++) {
-			player.my_hand.cards[i].set_rank(rank_map[(index+i)%13]);
+			player.my_hand.peek(i).set_rank((index+i)%13);
 		}
 		return;
 	}
 	private static void HACK_flush(GamePlayer player, int index) {
 		System.out.printf("HACK_test_flush\n");
 		for(int i = 0; i < num_cards; i++) {
-			player.my_hand.cards[i].set_suit(suit_map[index]);
+			player.my_hand.peek(i).set_suit(index);
 		}
 		player.print_hand();
 		return;
