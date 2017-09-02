@@ -3,7 +3,7 @@ import java.util.Random;
 
 public class GameType {
 	static private Random rng = new Random();
-	static int num_bots = 1; // have dynamically determined at runtime
+	static int num_bots = 3; // have dynamically determined at runtime
 	static int num_players = num_bots + 1; // have dynamically determined at runtime
 	static int num_cards = 5;
 	static int max_swaps = 3;
@@ -40,17 +40,16 @@ public class GameType {
 
 		// TODO handle too many players
 		print_deck(game_deck);
-		shuffle_deck(game_deck);
+		//shuffle_deck(game_deck);
 		print_deck(game_deck);
 
 		// Begin game
 		
-		for(int round = 0; round < 52; round++) {
-			print_deck(game_deck);
+		for(int round = 0; round < 2; round++) {
+			//print_deck(game_deck);
 
 			round_init(players);
 			// Discard cards
-			print_hands(players);
 			for(int part = 0; part < 2; part++) {
 				/*
 				 * AI calculate discard(move to GameBot in future)
@@ -65,7 +64,7 @@ public class GameType {
 						if(		players[i].hand_size() > (num_cards - max_swaps)
 							&&	has_ace(players[i])) {
 
-							System.out.printf("Player %d has an Ace\n", players[i].player_id());
+							//System.out.printf("Player %d has an Ace\n", players[i].player_id());
 						}
 							
 						/*
@@ -99,14 +98,24 @@ public class GameType {
 				}
 				//*/
 			}
+			for(int i = 0; i < rank_map.length; i++) {
+				HACK_straight(players[0], i);
+				print_hands(players);
+			}
+			for(int i = 0; i < suit_map.length; i++) {
+				HACK_flush(players[0], i);
+				print_hands(players);
+			}
 
-			/*
-			 * debug hand drawing
-			 */
-			//print_hands(bots, human);
-			/*
-			*/
-			
+			HACK_flush(players[0], 0);
+			HACK_straight(players[0], 9);
+			print_hands(players);
+
+			for(int i = 0; i < suit_map.length; i++) {
+				print_hands(players);
+			}
+			print_hands(players);
+
 			// Discard the cards for all of the players
 			for(int i = 1; i <= num_cards; i++) {
 				for(int j = 0; j < num_players; j++) {
@@ -151,8 +160,49 @@ public class GameType {
 	// DEBUG
 	private static void print_hands(GamePlayer[] players) {
 		for(int i = 0; i < num_players; i++) {
-			System.out.printf("Player %d's hand':\n", i);
-			players[i].print_hand();
+			switch(players[i].my_hand.eval_score()) {
+				case 7:
+					System.out.printf("Player %d's hand':\n", i);
+					players[i].print_hand();
+					System.out.printf("Straight Flush!\n", i);
+					break;
+				case 6:
+					System.out.printf("Player %d's hand':\n", i);
+					players[i].print_hand();
+					System.out.printf("Four of a Kind!\n", i);
+					break;
+				case 5:
+					System.out.printf("Player %d's hand':\n", i);
+					players[i].print_hand();
+					System.out.printf("Full House\n", i);
+					break;
+				case 4:
+					System.out.printf("Player %d's hand':\n", i);
+					players[i].print_hand();
+					System.out.printf("Flush!\n", i);
+					break;
+				case 3:
+					System.out.printf("Player %d's hand':\n", i);
+					players[i].print_hand();
+					System.out.printf("Straight!\n", i);
+					break;
+				case 2:
+					System.out.printf("Player %d's hand':\n", i);
+					players[i].print_hand();
+					System.out.printf("Three of a Kind!\n", i);
+					break;
+				case 1:
+					System.out.printf("Player %d's hand':\n", i);
+					players[i].print_hand();
+					System.out.printf("Two Pair!\n", i);
+					break;
+				case 0:
+					System.out.printf("Player %d's hand':\n", i);
+					players[i].print_hand();
+					System.out.printf("One Pair!\n", i);
+					break;
+				default:
+			}
 		}
 		return;
 	}
@@ -183,6 +233,21 @@ public class GameType {
 		}
 		return false;
 
+	}
+	private static void HACK_straight(GamePlayer player, int index) {
+		System.out.printf("HACK_test_straight\n");
+		for(int i = 0; i < num_cards; i++) {
+			player.my_hand.cards[i].set_rank(rank_map[(index+i)%13]);
+		}
+		return;
+	}
+	private static void HACK_flush(GamePlayer player, int index) {
+		System.out.printf("HACK_test_flush\n");
+		for(int i = 0; i < num_cards; i++) {
+			player.my_hand.cards[i].set_suit(suit_map[index]);
+		}
+		player.print_hand();
+		return;
 	}
 
 }

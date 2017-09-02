@@ -21,10 +21,5 @@ public class GameBot extends GamePlayer{
 		// methods of interacting with the game without the need of a separate class
 		return bot_logic();
 	}
-	public boolean is_straight() {
-		return false;
-	}
-	public boolean is_flush() {
-		return false;
-	}
+
 }

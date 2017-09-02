@@ -1,7 +1,7 @@
 package prog1;
 
 public class GamePlayer {
-	private Hand my_hand;
+	Hand my_hand;
 	private boolean working;
 	private int player_id;
 
@@ -61,6 +61,19 @@ public class GamePlayer {
 		}
 		return;
 		//my_hand.print();
+	}
+	// TODO
+	private void order_hand() {
+		for(int i = 0; i < my_hand.get_num_cards(); i++) {
+			// let temp be the first element
+			Card temp = my_hand.cards[i];
+			for(int j = i; j < my_hand.get_num_cards(); j++) {
+				// if there's a card lesser than temp, swap temp and that card
+			}
+		}
+
+		
+		
 	}
 
 }
