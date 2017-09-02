@@ -10,7 +10,7 @@ public class Deck {
 		num_cards = 0;
 		return;
 	}
-	public int get_size() {
+	public int get_num_cards() {
 		return num_cards;
 	}
 	public void place_card(Card new_card){
@@ -54,7 +54,7 @@ public class Deck {
 
 		// extract a random card from the deck then place it into
 		// a temporary deck
-		for(int i = get_size(); i > 0; --i) {
+		for(int i = get_num_cards(); i > 0; --i) {
 			int random_index = rng.nextInt(i);
 			Card drawn = extract_ith_card(random_index);
 			shuffled.place_card(drawn); // for 401 figure out what the shuffling problem's runtime is

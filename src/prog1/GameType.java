@@ -9,18 +9,35 @@ public class GameType {
 	static int max_swaps = 3;
 	static Deck game_deck;
 	static Deck discard_deck;
+	static char[] suit_map = {	'C', 'D', 'S', 'H'};
+
+	static char[] rank_map = {	'A', '2', '3', '4', 
+								'5', '6', '7', '8', 
+								'9', 'T', 'J', 'Q', 
+								'K'};
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		// TODO take command line args or something
 		game_deck = make_deck();
 		discard_deck = new Deck();
 
+		// check if there are too many players
+		if(game_deck.get_num_cards() < num_players * num_cards) {
+			System.out.printf("You have too many friends");
+			return;
+		}
+		
+		// create the deck
+
 		GamePlayer[] players = new GamePlayer[num_players];
-		//players[0] = new GamePlayer();
-		// TODO add human player
+		// players[0] = new GamePlayer();
+		// TODO remember to add human player
+		
+		
 		for(int i = 0; i < num_players; i++) {
 			players[i] = new GameBot(i);
 		}
+
 		// TODO handle too many players
 		print_deck(game_deck);
 		shuffle_deck(game_deck);
@@ -32,13 +49,12 @@ public class GameType {
 			print_deck(game_deck);
 
 			round_init(players);
-			// Swap cards
+			// Discard cards
 			for(int part = 0; part < 2; part++) {
 				/*
-				 * AI calculate discard(move to GameBot in future
+				 * AI calculate discard(move to GameBot in future)
 				 */
 				//*
-				System.out.printf("PRE SWAP\n");
 				print_hands(players);
 				for(int i = 0; i < num_players; i++) {
 					players[i].start_working();
@@ -49,7 +65,7 @@ public class GameType {
 						if(		players[i].hand_size() > (num_cards - max_swaps)
 							&&	has_ace(players[i])) {
 
-							System.out.printf("Computer Hand contains Ace\n");
+							System.out.printf("Player %d has an Ace\n", players[i].player_id());
 						}
 							
 						/*
@@ -57,11 +73,8 @@ public class GameType {
 						 * TODO
 						 */
 						int returned = players[i].discard();
-						System.out.printf("length: %d\n", players[i].hand_size());
-						// swap automatically extracts a card so 
-						// we need to replace it
-						// if the bot is still picking cards to remove, then returned
-						// is a card we want to discard
+						//System.out.printf("length: %d\n", players[i].hand_size());
+
 						if(players[i].is_working()) {
 							discard_deck.place_card(players[i].return_card(returned));
 							num_discarded += 1;
@@ -73,7 +86,7 @@ public class GameType {
 						// shuffle // the discard deck and use 
 						// it
 
-						if(game_deck.get_size() == 0) {
+						if(game_deck.get_num_cards() == 0) {
 							// Shuffle the discard pile
 							discard_deck.shuffle_deck(rng);
 							// Place the shuffled discard pile under the deck
@@ -84,8 +97,6 @@ public class GameType {
 						
 					}
 				}
-				System.out.printf("POST SWAP\n");
-				print_hands(players);
 				//*/
 			}
 
@@ -110,18 +121,11 @@ public class GameType {
 	}
 	private static Deck make_deck() {
 		System.out.println("make_deck()");
-
-		char[] suit_map = {	'C', 'D', 'S', 'H'};
-
-		char[] rank_map = {	'A', '2', '3', '4', 
-							'5', '6', '7', '8', 
-							'9', 'T', 'J', 'Q', 
-							'K'};
 		Deck game_deck = new Deck();
 
 		// create a card and then put it into the deck
-		for(int suit = 0; suit < 4; suit++) {
-			for(int rank = 0; rank < 13; rank++) {
+		for(int suit = 0; suit < suit_map.length; suit++) {
+			for(int rank = 0; rank < rank_map.length; rank++) {
 				Card my_card = new Card(rank_map[rank], suit_map[suit]);
 				game_deck.place_card(my_card);
 			}
@@ -140,7 +144,7 @@ public class GameType {
 
 	private static void print_deck(Deck game_deck) {
 		System.out.println("print_deck()");
-		System.out.printf("deck_len: %d\n", game_deck.get_size()); // TODO remove this
+		System.out.printf("deck_len: %d\n", game_deck.get_num_cards()); // TODO remove this
 		game_deck.print();
 		return;
 	}
@@ -155,7 +159,7 @@ public class GameType {
 	private static void round_init(GamePlayer[] players) {
 		// if we don't have enough cards after the last round
 		// add the discard pile to the deck
-		if(game_deck.get_size() < num_players * num_cards) {
+		if(game_deck.get_num_cards() < num_players * num_cards) {
 			// Place the discard deck under the deck
 			game_deck.combine(discard_deck);
 			// Shuffle the deck 
@@ -172,12 +176,12 @@ public class GameType {
 		}
 	}
 	private static boolean has_ace(GamePlayer player) {
-		return	((
-					player.hand_contains('A', 'C') ||
-					player.hand_contains('A', 'D') ||
-					player.hand_contains('A', 'S') ||
-					player.hand_contains('A', 'H'))
-				);
+		for(int i = 0; i < suit_map.length; i++) {
+			if(player.hand_contains('A', suit_map[i]))
+				return true;
+		}
+		return false;
+
 	}
 
 }

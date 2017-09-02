@@ -29,7 +29,7 @@ public class GamePlayer {
 		return;
 	}
 	public int hand_size() {
-		return my_hand.get_size();
+		return my_hand.get_num_cards();
 	}
 	private int ui() {
 		/*
