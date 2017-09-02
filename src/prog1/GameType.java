@@ -83,7 +83,7 @@ public class GameType {
 					
 					
 					// deal cards to player until hand is full again
-					while(players[i].hand_size() < num_cards) {
+					while(players[i].get_hand_size() < num_cards) {
 						// if we run out of cards somehow, we 
 						// shuffle // the discard deck and use 
 						// it
@@ -101,7 +101,7 @@ public class GameType {
 				}
 				//*/
 			}
-			/*
+			//*
 			for(int i = 0; i < rank_map.length; i++) {
 				HACK_straight(players[0], i);
 				print_hands(players);
@@ -163,48 +163,53 @@ public class GameType {
 	// DEBUG
 	private static void print_hands(GamePlayer[] players) {
 		for(int i = 0; i < num_players; i++) {
+			int score = players[i].eval_score();
 			switch(players[i].eval_score()) {
-				case 7:
+				case 21:
 					System.out.printf("Player %d's hand':\n", i);
 					players[i].print_hand();
 					System.out.printf("Straight Flush!\n", i);
 					break;
-				case 6:
+				case 20:
 					System.out.printf("Player %d's hand':\n", i);
 					players[i].print_hand();
 					System.out.printf("Four of a Kind!\n", i);
 					break;
-				case 5:
+				case 19:
 					System.out.printf("Player %d's hand':\n", i);
 					players[i].print_hand();
 					System.out.printf("Full House\n", i);
 					break;
-				case 4:
+				case 18:
 					System.out.printf("Player %d's hand':\n", i);
 					players[i].print_hand();
 					System.out.printf("Flush!\n", i);
 					break;
-				case 3:
+				case 17:
 					System.out.printf("Player %d's hand':\n", i);
 					players[i].print_hand();
 					System.out.printf("Straight!\n", i);
 					break;
-				case 2:
+				case 16:
 					System.out.printf("Player %d's hand':\n", i);
 					players[i].print_hand();
 					System.out.printf("Three of a Kind!\n", i);
 					break;
-				case 1:
+				case 15:
 					System.out.printf("Player %d's hand':\n", i);
 					players[i].print_hand();
 					System.out.printf("Two Pair!\n", i);
 					break;
-				case 0:
+				case 14:
 					System.out.printf("Player %d's hand':\n", i);
 					players[i].print_hand();
 					System.out.printf("One Pair!\n", i);
 					break;
 				default:
+					System.out.printf("Player %d's hand':\n", i);
+					players[i].print_hand();
+					System.out.printf("High Card: %c!\n", rank_map[score-1]);
+					break;
 			}
 		}
 		return;

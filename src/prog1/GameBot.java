@@ -18,19 +18,6 @@ public class GameBot extends GamePlayer{
 	private int handle_four_of_a_kind() {
 		return -1;
 	}
-	/*
-	 * Return Values
-	 * Straight Flush 7
-	 * Four of a Kind 6
-	 * Full House 5
-	 * Flush 4
-	 * Straight 3
-	 * Three of a Kind 2
-	 * Two Pair 1
-	 * One Pair 0
-	 * 
-	 * High Card all else
-	 */
 	private int bot_logic() {
 		int id_discard = -1;
 		int score = this.eval_score();

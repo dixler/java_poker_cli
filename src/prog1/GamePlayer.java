@@ -1,7 +1,9 @@
 package prog1;
 
+// TODO rename functions with prefix indicating what it's modifying
+
 public class GamePlayer {
-	Hand my_hand; //make private later
+	protected Hand my_hand; //make private later
 	private int player_id;
 
 	public GamePlayer(int id, int num_cards) {
@@ -9,14 +11,14 @@ public class GamePlayer {
 		player_id = id;
 		return;
 	}
-	public int player_id() {
+	public int get_player_id() {
 		return player_id;
 	}
 	public void draw_card(Card dealt) {
 		my_hand.draw(dealt);
 		return;
 	}
-	public int hand_size() {
+	public int get_hand_size() {
 		return my_hand.get_num_cards();
 	}
 	private int ui() {
@@ -75,27 +77,40 @@ public class GamePlayer {
 	
 	/*
 	 * Return Values
-	 * Straight Flush 7
-	 * Straight 3
-	 * Flush 4
-	 * One Pair 0
-	 * Two Pair 1
-	 * Three of a Kind 2
-	 * Four of a Kind 6
-	 * Full House 5
-	 * 
-	 * High Card all else
+	 * ----------------------------------------------
+	 * Straight Flush	21	|	Four of a Kind	20
+	 * ----------------------------------------------
+	 * Full House		19	|	Flush			18
+	 * ----------------------------------------------
+	 * Straight			17	|	Three of a Kind	16
+	 * ----------------------------------------------
+	 * Two Pair			15	|	One Pair		14
+	 * ----------------------------------------------
+	 * K				13	|	Q				12
+	 * ----------------------------------------------
+	 * J				11	|	T				10
+	 * ----------------------------------------------
+	 * 9				9	|	8				8
+	 * ----------------------------------------------
+	 * 7				7	|	6				6
+	 * ----------------------------------------------
+	 * 5				5 	|	4				4
+	 * ----------------------------------------------
+	 * 3				3	|	2				2
+	 * ----------------------------------------------
+	 * A				1
+	 * ----------------------------------------------
 	 */
 	public int eval_score() {
 		int score = get_high_card();
 		if(is_straight(5) && is_flush(5)) {
-			score = 7;
+			score = 21;
 		}
 		else if(is_straight(5)) {
-			score = 3;
+			score = 17;
 		}
 		else if(is_flush(5)) {
-			score = 4;
+			score = 18;
 		}
 
 		// handle rankings based on duplicates
@@ -104,19 +119,19 @@ public class GamePlayer {
 		case 0:
 			break;
 		case 1:
-			score = Math.max(0, score);
+			score = Math.max(14, score);
 			break;
 		case 2:
-			score = Math.max(1, score);
+			score = Math.max(15, score);
 			break;
 		case 3:
-			score = Math.max(2, score);
+			score = Math.max(16, score);
 			break;
 		case 4:
-			score = Math.max(6, score);
+			score = Math.max(20, score);
 			break;
 		case 5:
-			score = Math.max(5, score);
+			score = Math.max(19, score);
 			break;
 		}
 		return score;
@@ -162,13 +177,13 @@ public class GamePlayer {
 	}
 	private int get_high_card() {
 		int count = 0;
-		int index;
-		for(index = rank_map.length - 1; index > 0; index += -1) {
-			count = count_by_rank(rank_map[index]);
+		int rank_map_index;
+		for(rank_map_index = rank_map.length - 1; rank_map_index > 0; rank_map_index += -1) {
+			count = count_by_rank(rank_map[rank_map_index]);
 			if(count > 0)
 				break;
 		}
-		return -1*rank_map.length + index;
+		return rank_map_index + 1;
 	}
 	protected boolean is_flush(int target_flushed) {
 		// do we have enough cards
