@@ -52,7 +52,7 @@ public class GameType {
 			round_init(players);
 			// Discard cards
 			//print_hands(players);
-			for(int part = 0; part < 2; part++) {
+			for(int part = 0; part < 1; part++) {
 
 				// For each player allow them to discard
 				for(int i = 0; i < num_players; i++) {
@@ -60,7 +60,7 @@ public class GameType {
 					int id_discarded;
 					do {
 						// PRE DISCARD TURN //////////////////////////////////////
-						/*
+						//*
 						System.out.printf("PRE DISCARD\n");
 						players[i].print_hand();
 						//*/
@@ -68,12 +68,14 @@ public class GameType {
 						//System.out.printf("length: %d\n", players[i].hand_size());
 
 						id_discarded = players[i].turn();
+						//System.out.printf("DISCARDING %d\n", id_discarded);
+
 
 						if(id_discarded != -1) {
 							discard_deck.place_card(players[i].discard(id_discarded));
 							num_discarded += 1;
+							System.out.printf("DISCARDING\n");
 							/*
-							System.out.printf("DISCARDIND\n");
 							System.out.printf("DISCARDIND\n");
 							System.out.printf("DISCARDIND\n");
 							System.out.printf("DISCARDIND\n");
@@ -84,7 +86,7 @@ public class GameType {
 						}
 
 						// POST DISCARD TURN //////////////////////////////////////
-						/*
+						//*
 						System.out.printf("POST DISCARD\n");
 						players[i].print_hand();
 						//*/

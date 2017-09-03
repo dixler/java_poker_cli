@@ -32,7 +32,7 @@ public class Hand {
 		return discarded;
 	}
 	private void shift_left(int index) {
-		for(int i = index; i < num_cards-1; i++) {
+		for(int i = index; i < num_cards; i++) {
 			cards[i] = cards[i+1];
 		}
 		return;

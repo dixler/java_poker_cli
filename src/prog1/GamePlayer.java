@@ -5,6 +5,56 @@ package prog1;
 public class GamePlayer {
 	protected Hand my_hand; //make private later
 	private int player_id;
+	protected char[] suit_map = {	'C', 'D', 'S', 'H'};
+
+	protected char[] rank_map = {	'A', '2', '3', '4', 
+									'5', '6', '7', '8', 
+									'9', 'T', 'J', 'Q', 
+									'K'};
+	private int char_to_suit(char suit) {
+		switch(suit) {
+		case 'C':
+			return 0;
+		case 'D':
+			return 1;
+		case 'S':
+			return 2;
+		case 'H':
+			return 3;
+		}
+		return -1;
+	}
+	private int char_to_rank(char rank) {
+		switch(rank) {
+		case 'A':
+			return 0;
+		case '2':
+			return 1;
+		case '3':
+			return 2;
+		case '4':
+			return 3;
+		case '5':
+			return 4;
+		case '6':
+			return 5;
+		case '7':
+			return 6;
+		case '8':
+			return 7;
+		case '9':
+			return 8;
+		case 'T':
+			return 9;
+		case 'J':
+			return 10;
+		case 'Q':
+			return 11;
+		case 'K':
+			return 12;
+		}
+		return -1;
+	}
 
 	public GamePlayer(int id, int num_cards) {
 		my_hand = new Hand(num_cards);
@@ -39,7 +89,7 @@ public class GamePlayer {
 	}
 	// TODO make more portable
 	public boolean is_holding(char rank, char suit) {
-		return my_hand.find(rank, suit) != -1;
+		return my_hand.find(char_to_rank(rank), char_to_suit(suit)) != -1;
 	}
 	// TODO REMOVE DEBUG
 	public void print_hand() {
@@ -68,12 +118,6 @@ public class GamePlayer {
 	 * Move to GamePlayer
 	 * 
 	 */
-	protected char[] suit_map = {	'C', 'D', 'S', 'H'};
-
-	protected char[] rank_map = {	'A', '2', '3', '4', 
-									'5', '6', '7', '8', 
-									'9', 'T', 'J', 'Q', 
-									'K'};
 	
 	/*
 	 * Return Values
@@ -231,18 +275,42 @@ public class GamePlayer {
 		}
 		return score;
 	}
-	private int count_by_rank(char rank) {
+	protected int count_by_rank(int rank) {
 		int count = 0;
 		for(int i = 0; i < my_hand.get_num_cards(); i++) {
+			// casts the integer value of the card's rank to a char 
+			// and then checks it against the rank argument
+			if(my_hand.peek(i).get_rank() == rank)
+				count += 1;
+		}
+		return count;
+	}
+	protected int count_by_rank(char rank) {
+		int count = 0;
+		for(int i = 0; i < my_hand.get_num_cards(); i++) {
+			// casts the integer value of the card's rank to a char 
+			// and then checks it against the rank argument
 			if(rank_map[my_hand.peek(i).get_rank()] == rank)
 				count += 1;
 		}
 		return count;
 	}
-	private int count_by_suit(char suit) {
+	protected int count_by_suit(char suit) {
 		int count = 0;
 		for(int i = 0; i < my_hand.get_num_cards(); i++) {
+			// casts the integer value of the card's suit to a char 
+			// and then checks it against the suit argument
 			if(suit_map[my_hand.peek(i).get_suit()] == suit)
+				count += 1;
+		}
+		return count;
+	}
+	protected int count_by_suit(int suit) {
+		int count = 0;
+		for(int i = 0; i < my_hand.get_num_cards(); i++) {
+			// casts the integer value of the card's suit to a char 
+			// and then checks it against the suit argument
+			if(my_hand.peek(i).get_suit() == suit)
 				count += 1;
 		}
 		return count;
