@@ -37,6 +37,13 @@ public class Hand {
 		}
 		return;
 	}
+	public int find_first_rank(int rank) {
+		for(int i = 0; i < cards.length; i++) {
+			if(cards[i].get_rank() == rank)
+				return i;
+		}
+		return -1;
+	}
 	public int find(int rank, int suit) {
 		for(int i = 0; i < cards.length; i++) {
 			if(cards[i].get_suit() == suit && cards[i].get_rank() == rank)
@@ -44,13 +51,13 @@ public class Hand {
 		}
 		return -1;
 	}
-	public int peek_rank(int index) {
+	public int get_rank(int index) {
 		return cards[index].get_rank();
 	}
-	public int peek_suit(int index) {
-		return cards[index].get_rank();
+	public int get_suit(int index) {
+		return cards[index].get_suit();
 	}
-	public Card peek(int index) {
+	public Card get_card(int index) {
 		//System.out.printf("peeking %d\n", index);
 		return cards[index];
 	}

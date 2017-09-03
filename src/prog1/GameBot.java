@@ -10,16 +10,15 @@ public class GameBot extends GamePlayer{
 		for(int i = 0; i < this.rank_map.length; i++) {
 			// if theres a card at rank i and no cards before and after it, we need to discard this one
 			// aces are tricky
-			if(this.count_by_rank((i)%rank_map.length) == 1 && this.count_by_rank((i+1)%rank_map.length) == 0 && this.count_by_rank((i-1)%rank_map.length) == 0) {
+			if(		this.count_by_rank((i)%rank_map.length) == 1	// there is a card of this rank
+				&&	this.count_by_rank((i+1)%rank_map.length) == 0 	// there are no cards of one rank higher
+				&&	this.count_by_rank((i-1)%rank_map.length) == 0) // there are no cards of one rank lower
+			{
 				rank_discard = i;
 			}
 		}
 		// get that lone card's index and return it for discarding
-		for(int i = 0; i < this.get_hand_size(); i++) {
-			if(this.my_hand.peek(i).get_rank() == rank_discard)
-				return i;
-		}
-		return -1;
+		return my_hand.find_first_rank(rank_discard);
 	}
 	private int find_lone_suit() {
 		int suit_discard = -1;
@@ -31,7 +30,7 @@ public class GameBot extends GamePlayer{
 		}
 		// get that lone card's index and return it for discarding
 		for(int i = 0; i < this.get_hand_size(); i++) {
-			if(this.my_hand.peek(i).get_suit() == suit_discard)
+			if(this.my_hand.get_suit(i) == suit_discard)
 				return i;
 		}
 		return -1;
@@ -49,7 +48,7 @@ public class GameBot extends GamePlayer{
 		}
 		// get that lone card's index and return it for discarding
 		for(int i = 0; i < this.get_hand_size(); i++) {
-			if(this.my_hand.peek(i).get_rank() == rank_discard)
+			if(this.my_hand.get_rank(i) == rank_discard)
 				return i;
 		}
 		return -1;
@@ -69,7 +68,6 @@ public class GameBot extends GamePlayer{
 	private int bot_logic() {
 		int id_discard = -1;
 		int score = this.eval_score();
-			//System.out.printf("player %d score: %d\n", this.get_player_id(), score);
 			switch(score) {
 			case 21:
 				// No work to be done STRAIGHT FLUSH
@@ -96,66 +94,47 @@ public class GameBot extends GamePlayer{
 				id_discard = handle_one_pair();
 				break;
 			default:
-				//System.out.printf("evaluating high card\n");
 				// is high_card
 
 				// 4 cards same suit?
 				if(this.is_flush(4)) {
-					id_discard = find_lone_suit();
-					/*
-					System.out.printf("%d has 4 FLUSH!!!!!!!!!!!!!!11\n", this.player_id());
-					this.print_hand();
-					System.out.printf("Words");
-					//*/
 					// discard non similar
+					id_discard = find_lone_suit();
 				}
 				
 				// 4 cards in sequence?
 				else if(this.is_straight(4)) {
-					System.out.printf("%d has 4 STRAIGHT!!!!!!!!!!!!!!11\n", this.get_player_id());
-					id_discard = find_isolated_card();
-					/*
-					System.out.printf("%d has 4 STRAIGHT!!!!!!!!!!!!!!11\n", this.player_id());
-					this.print_hand();
-					System.out.printf("Words");
-					//*/
 					// discard non similar
+					id_discard = find_isolated_card();
 				}
 				
 				else {
-					//System.out.printf("High Card!\n");
-					int kept_card_index = 0;
+					int kept_card_index = -1;
 					boolean has_ace = false;
-					for(int i = 0; i < this.get_hand_size(); i++) {
-						if(this.my_hand.peek(i).get_rank() == 0) {
-							has_ace = true;
-							kept_card_index = i;
-							//System.out.printf("%d: Ace Exception\n", this.get_player_id());
-						}
+					// do we have an ace?
+					kept_card_index = my_hand.find_first_rank(0);
+
+					if(kept_card_index != -1) {
+						has_ace = true;
 					}
 
 					// we want to keep the highest card
+					// we can get the card's numerical 
+					// rank from the score
 					int kept_card_rank = score - 1;
 					// handle ace exception
 					// unless we have an Ace
 					if(!has_ace) {
-						for(int i = 0; i < this.my_hand.get_num_cards(); i++) {
-							// find the high card
-							if(this.my_hand.peek(i).get_rank() == kept_card_rank) {
-								kept_card_index = i;
-								break;
-							}
-						}
+						kept_card_index = my_hand.find_first_rank(kept_card_rank);
 					}
-					//this.print_hand();
 					if(kept_card_index > 0) {
 						// we want to discard cards before the high card
 						id_discard = 0;
 					}
 					else {
-						// ace is at the 0 index so we can remove index 1 
-						// repeatedly since discarding shifts everything
-						// over
+						// kept_card is at the 0 index so we can remove 
+						// index 1 repeatedly since discarding shifts 
+						// everything over
 						id_discard = 1;
 					}
 					break;

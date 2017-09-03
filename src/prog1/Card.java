@@ -21,6 +21,7 @@ public class Card {
 		return suit;
 	}
 	// TODO debug purposes
+	/*
 	public void set_rank(int new_rank) {
 		rank = new_rank;
 		return;
@@ -29,4 +30,5 @@ public class Card {
 		suit = new_suit;
 		return;
 	}
+	*/
 }

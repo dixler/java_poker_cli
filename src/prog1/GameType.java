@@ -30,11 +30,11 @@ public class GameType {
 		// create the deck
 
 		GamePlayer[] players = new GamePlayer[num_players];
-		// players[0] = new GamePlayer();
+		players[0] = new GamePlayer(0, num_cards);
 		// TODO remember to add human player
 		
 		
-		for(int i = 0; i < num_players; i++) {
+		for(int i = 1; i < num_players; i++) {
 			players[i] = new GameBot(i, num_cards);
 		}
 
@@ -45,88 +45,53 @@ public class GameType {
 
 		// Begin game
 		
-		for(int round = 0; round < 2; round++) {
+		for(int round = 0; round < 52; round++) {
 			System.out.printf("Round %d\n", round);
 			//print_deck(game_deck);
 
 			round_init(players);
-			// Discard cards
-			//print_hands(players);
-			/*
-			for(int i = 0; i < rank_map.length-4; i++) {
-				AI_near_straight(players[0], i);
-			}
-			//*/
-			for(int part = 0; part < 1; part++) {
 
-				// For each player allow them to discard
-				for(int i = 0; i < num_players; i++) {
-					int num_discarded = 0;
-					int id_discarded;
-					do {
-						// PRE DISCARD TURN //////////////////////////////////////
-						/*
-						System.out.printf("PRE DISCARD\n");
-						players[i].print_hand();
-						//*/
-						//////////////////////////////////////////////////////////
-						//System.out.printf("length: %d\n", players[i].hand_size());
+			// For each player allow them to discard
+			for(int i = 0; i < num_players; i++) {
+				int num_discarded = 0;
+				int id_discarded;
+				do {
 
-						id_discarded = players[i].turn();
-						//System.out.printf("DISCARDING %d\n", id_discarded);
+					id_discarded = players[i].turn();
 
 
-						if(id_discarded != -1) {
-							discard_deck.place_card(players[i].discard(id_discarded));
-							num_discarded += 1;
-							/*
-							System.out.printf("DISCARDING\n");
-							System.out.printf("DISCARDIND\n");
-							System.out.printf("DISCARDIND\n");
-							System.out.printf("DISCARDIND\n");
-							System.out.printf("DISCARDIND\n");
-							System.out.printf("DISCARDIND\n");
-							System.out.printf("DISCARDIND\n");
-							//*/
-						}
-
-						// POST DISCARD TURN //////////////////////////////////////
-						/*
-						System.out.printf("POST DISCARD\n");
-						players[i].print_hand();
-						//*/
-						///////////////////////////////////////////////////////////
-
-					}while(id_discarded != -1 && num_discarded < (max_discard + ace_exception(players[i])));
-					System.out.printf("Computer Player %d discarded %d cards\n", players[i].get_player_id(), num_discarded);
-					
-					
-					
-					// deal cards to player until hand is full again
-					while(players[i].get_hand_size() < num_cards) {
-						// if we run out of cards somehow, we 
-						// shuffle // the discard deck and use 
-						// it
-
-						if(game_deck.get_num_cards() == 0) {
-							// Shuffle the discard pile
-							discard_deck.shuffle_deck(rng);
-							// Place the shuffled discard pile under the deck
-							game_deck.combine(discard_deck);
-						}
-						// deal a card from the deck
-						players[i].draw_card(game_deck.draw_card());
-						
+					if(id_discarded != -1) {
+						discard_deck.place_card(players[i].discard(id_discarded));
+						num_discarded += 1;
 					}
+
+				}while(id_discarded != -1 && num_discarded < (max_discard + ace_exception(players[i])));
+				System.out.printf("Computer Player %d discarded %d cards\n", players[i].get_player_id(), num_discarded);
+				
+				
+				
+				// deal cards to player until hand is full again
+				while(players[i].get_hand_size() < num_cards) {
+					// if we run out of cards somehow, we 
+					// shuffle the discard deck and use it
+
+					if(game_deck.get_num_cards() == 0) {
+						// Shuffle the discard pile
+						discard_deck.shuffle_deck(rng);
+						// Place the shuffled discard pile under the deck
+						game_deck.combine(discard_deck);
+					}
+					// deal a card from the deck
+					players[i].draw_card(game_deck.draw_card());
+					
 				}
-				//*/
 			}
 			/*
 			for(int i = 0; i < rank_map.length; i++) {
 				HACK_straight(players[0], i);
 				print_hands(players);
 			}
-			//*
+			/*
 			for(int i = 0; i < suit_map.length; i++) {
 				HACK_flush(players[0], i);
 				print_hands(players);
@@ -177,13 +142,6 @@ public class GameType {
 		return;
 	}
 
-	private static void print_deck(Deck game_deck) {
-		System.out.println("print_deck()");
-		System.out.printf("deck_len: %d\n", game_deck.get_num_cards()); // TODO remove this
-		game_deck.print();
-		return;
-	}
-	// DEBUG
 	private static void print_hands(GamePlayer[] players) {
 		for(int i = 0; i < num_players; i++) {
 			int score = players[i].eval_score();
@@ -258,34 +216,45 @@ public class GameType {
 		}
 	}
 	private static int ace_exception(GamePlayer player) {
-		for(int i = 0; i < suit_map.length; i++) {
-			if(player.is_holding('A', suit_map[i]))
-				return 1;
+		if(player.count_by_rank('A') > 0) {
+			return 1;
 		}
 		return 0;
 
 	}
+	/*
+	private static void print_deck(Deck game_deck) {
+		System.out.println("print_deck()");
+		System.out.printf("deck_len: %d\n", game_deck.get_num_cards()); // TODO remove this
+		for(int i = 0; i < game_deck.get_num_cards(); i++) {
+			Card drawn = game_deck.draw_card();
+			System.out.printf("%c of %c\n", rank_map[drawn.get_rank()], suit_map[drawn.get_suit()]); // TODO remove this
+			game_deck.place_card_bottom(drawn);
+		}
+		return;
+	}
 	private static void AI_near_straight(GamePlayer player, int index) {
 		System.out.printf("HACK_test_straight\n");
 		for(int i = 0; i < num_cards-1; i++) {
-			player.my_hand.peek(i).set_rank((index+i)%13);
+			player.my_hand.get_card(i).set_rank((index+i)%13);
 		}
 		return;
 	}
 	private static void HACK_straight(GamePlayer player, int index) {
 		System.out.printf("HACK_test_straight\n");
 		for(int i = 0; i < num_cards; i++) {
-			player.my_hand.peek(i).set_rank((index+i)%13);
+			player.my_hand.get_card(i).set_rank((index+i)%13);
 		}
 		return;
 	}
 	private static void HACK_flush(GamePlayer player, int index) {
 		System.out.printf("HACK_test_flush\n");
 		for(int i = 0; i < num_cards; i++) {
-			player.my_hand.peek(i).set_suit(index);
+			player.my_hand.get_card(i).set_suit(index);
 		}
 		player.print_hand();
 		return;
 	}
+	//*/
 
 }
