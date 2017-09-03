@@ -133,6 +133,7 @@ public class GameType {
 			}
 			//*/
 
+			/*
 			print_hands(players);
 
 			for(int i = 0; i < suit_map.length; i++) {
