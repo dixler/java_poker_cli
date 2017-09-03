@@ -20,6 +20,7 @@ public class Card {
 	public int get_suit() {
 		return suit;
 	}
+	// TODO debug purposes
 	public void set_rank(int new_rank) {
 		rank = new_rank;
 		return;

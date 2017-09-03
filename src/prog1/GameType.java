@@ -52,6 +52,11 @@ public class GameType {
 			round_init(players);
 			// Discard cards
 			//print_hands(players);
+			/*
+			for(int i = 0; i < rank_map.length-4; i++) {
+				AI_near_straight(players[0], i);
+			}
+			//*/
 			for(int part = 0; part < 1; part++) {
 
 				// For each player allow them to discard
@@ -60,7 +65,7 @@ public class GameType {
 					int id_discarded;
 					do {
 						// PRE DISCARD TURN //////////////////////////////////////
-						//*
+						/*
 						System.out.printf("PRE DISCARD\n");
 						players[i].print_hand();
 						//*/
@@ -74,8 +79,8 @@ public class GameType {
 						if(id_discarded != -1) {
 							discard_deck.place_card(players[i].discard(id_discarded));
 							num_discarded += 1;
-							System.out.printf("DISCARDING\n");
 							/*
+							System.out.printf("DISCARDING\n");
 							System.out.printf("DISCARDIND\n");
 							System.out.printf("DISCARDIND\n");
 							System.out.printf("DISCARDIND\n");
@@ -86,7 +91,7 @@ public class GameType {
 						}
 
 						// POST DISCARD TURN //////////////////////////////////////
-						//*
+						/*
 						System.out.printf("POST DISCARD\n");
 						players[i].print_hand();
 						//*/
@@ -121,10 +126,12 @@ public class GameType {
 				HACK_straight(players[0], i);
 				print_hands(players);
 			}
+			//*
 			for(int i = 0; i < suit_map.length; i++) {
 				HACK_flush(players[0], i);
 				print_hands(players);
 			}
+			//*/
 
 			print_hands(players);
 
@@ -256,6 +263,13 @@ public class GameType {
 		}
 		return 0;
 
+	}
+	private static void AI_near_straight(GamePlayer player, int index) {
+		System.out.printf("HACK_test_straight\n");
+		for(int i = 0; i < num_cards-1; i++) {
+			player.my_hand.peek(i).set_rank((index+i)%13);
+		}
+		return;
 	}
 	private static void HACK_straight(GamePlayer player, int index) {
 		System.out.printf("HACK_test_straight\n");

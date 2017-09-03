@@ -44,6 +44,12 @@ public class Hand {
 		}
 		return -1;
 	}
+	public int peek_rank(int index) {
+		return cards[index].get_rank();
+	}
+	public int peek_suit(int index) {
+		return cards[index].get_rank();
+	}
 	public Card peek(int index) {
 		//System.out.printf("peeking %d\n", index);
 		return cards[index];

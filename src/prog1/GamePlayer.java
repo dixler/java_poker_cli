@@ -83,8 +83,6 @@ public class GamePlayer {
 		return my_hand.discard(index);
 	}
 	public int turn() {
-		// This is kinda dumb since we can just have a GamePlayer class manage two different
-		// methods of interacting with the game without the need of a separate class
 		return ui();
 	}
 	// TODO make more portable
@@ -182,6 +180,35 @@ public class GamePlayer {
 	}
 
 	// there are faster searching algorithms for this
+	private boolean holding_one_lesser(int rank) {
+		if(this.count_by_rank((rank - 1) % rank_map.length) == 1) {
+			return true;
+		}
+		return false;
+	}
+	protected boolean is_straight(int target_straight) {
+		for(int i = 0; i < rank_map.length; i++) {
+			// if it's a straight no duplicates
+			if(this.count_by_rank(i) > my_hand.get_max_cards() - (target_straight - 1)) {
+				return false;
+			}
+		}
+		int num_adjacent = 0;
+		for(int i = 0; i < rank_map.length; i++) {
+			// TODO:	count_by_rank(4) will break on the case of there being two of the same
+			// 			rank, but since one pair will take priority over a near straight, it
+			//			doesn't ever come down to this. Noting for clarity
+			if(count_by_rank(i) == 1 && holding_one_lesser(i)) {
+				num_adjacent += 1;
+			}
+		}
+		if((num_adjacent + 1) == target_straight) {
+			System.out.printf("STRAIGHT OF %d\n", target_straight);
+			return true;
+		}
+		return false;
+	}
+	/*
 	protected boolean is_straight(int target_straight) {
 		int combo = 0;
 		//System.out.printf("is_straight\n");
@@ -219,6 +246,7 @@ public class GamePlayer {
 		}
 		return true;
 	}
+	*/
 	private int get_high_card() {
 		int count = 0;
 		int rank_map_index;
