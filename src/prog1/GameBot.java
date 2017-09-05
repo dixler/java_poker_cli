@@ -147,7 +147,6 @@ public class GameBot{
 		}
 		return false;
 	}
-
 	private int get_high_card() {
 		int count = 0;
 		int rank_map_index;
@@ -166,7 +165,6 @@ public class GameBot{
 			if(challenger_count >= max_count) {
 				high_card_rank = i;
 				max_count = challenger_count;
-				System.out.printf("HIGH PAIR RROEUTNHNTEOHU High Card: %c\n", rank_map[i]);
 			}
 		}
 		return high_card_rank + 1;

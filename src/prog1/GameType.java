@@ -31,12 +31,12 @@ public class GameType {
 		// create the deck
 
 		GameBot[] players = new GameBot[num_players];
-		int num_players = 0;
+		//int num_humans = 0;
 		//players[0] = new GamePlayer(0, num_cards);
 		// TODO remember to add human player
 		
 		
-		for(int i = num_players; i < num_bots; i++) {
+		for(int i = 0; i < num_players; i++) {
 			players[i] = new GameBot(i, num_cards);
 		}
 
@@ -101,17 +101,18 @@ public class GameType {
 			}
 			//*/
 			print_hands(players);
+			/*
 			for(int i = 0; i < players.length; i++) {
 				// TEST OUT PRINTING SCORES
-				evaluate_score(players[i]);
+				System.out.printf("player %d score: %d\n", i, players[i].eval_score());
 			}
-			System.out.printf("POST EVAL\n");
+			*/
 			print_hands(players);
 
 			// Discard the cards for all of the players
 			for(int i = 1; i <= num_cards; i++) {
 				for(int j = 0; j < num_players; j++) {
-					discard_deck.place_card(players[j].discard(num_cards - i));
+					discard_deck.place_card(players[j].discard(0));
 				}
 			}
 
@@ -119,15 +120,6 @@ public class GameType {
 		}
 
 		return;
-	}
-	private static int evaluate_score(GameBot player) {
-		int score = player.eval_score();
-		
-		System.out.printf("SCORE %d\n", score);
-		
-		// TODO
-		
-		return score;
 	}
 	private static Deck make_deck() {
 		System.out.println("make_deck()");
@@ -156,10 +148,9 @@ public class GameType {
 		for(int i = 0; i < num_players; i++) {
 			System.out.printf("Player %d's hand':\n", i);
 			int score = players[i].eval_score();
-			int result = (score) % (21);
 			int high_card = (score - 1) % rank_map.length;
-			System.out.printf("score: %d\n", score % 21);
-			System.out.printf("high_card: %c\n", rank_map[high_card]);
+			int result = (score) / (high_card + 1);
+			System.out.printf("score: %d\n", score);
 			switch(result) {
 				case 21:
 					players[i].print_hand();
