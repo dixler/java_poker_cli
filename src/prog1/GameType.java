@@ -4,7 +4,8 @@ import java.util.Random;
 public class GameType {
 	static private Random rng = new Random();
 	static int num_bots = 3; // have dynamically determined at runtime
-	static int num_players = num_bots + 1; // have dynamically determined at runtime
+	static int num_humans = 0; // have dynamically determined at runtime
+	static int num_players = num_humans + num_bots; // have dynamically determined at runtime
 	static int num_cards = 5;
 	static int max_discard = 3;
 	static Deck game_deck;
@@ -29,12 +30,13 @@ public class GameType {
 		
 		// create the deck
 
-		GamePlayer[] players = new GamePlayer[num_players];
-		players[0] = new GamePlayer(0, num_cards);
+		GameBot[] players = new GameBot[num_players];
+		int num_players = 0;
+		//players[0] = new GamePlayer(0, num_cards);
 		// TODO remember to add human player
 		
 		
-		for(int i = 1; i < num_players; i++) {
+		for(int i = num_players; i < num_bots; i++) {
 			players[i] = new GameBot(i, num_cards);
 		}
 
@@ -44,7 +46,6 @@ public class GameType {
 		//print_deck(game_deck);
 
 		// Begin game
-		
 		for(int round = 0; round < 52; round++) {
 			System.out.printf("Round %d\n", round);
 			//print_deck(game_deck);
@@ -52,20 +53,14 @@ public class GameType {
 			round_init(players);
 
 			// For each player allow them to discard
-			for(int i = 0; i < num_players; i++) {
-				int num_discarded = 0;
-				int id_discarded;
-				do {
+			for(int i = 0; i < players.length; i++) {
+				Deck discard_pile;
 
-					id_discarded = players[i].turn();
+				discard_pile = players[i].turn(max_discard + ace_exception(players[i]));
+				int num_discarded = discard_pile.get_num_cards();
 
+				discard_deck.combine(discard_pile);
 
-					if(id_discarded != -1) {
-						discard_deck.place_card(players[i].discard(id_discarded));
-						num_discarded += 1;
-					}
-
-				}while(id_discarded != -1 && num_discarded < (max_discard + ace_exception(players[i])));
 				System.out.printf("Computer Player %d discarded %d cards\n", players[i].get_player_id(), num_discarded);
 				
 				
@@ -106,6 +101,12 @@ public class GameType {
 			}
 			//*/
 			print_hands(players);
+			for(int i = 0; i < players.length; i++) {
+				// TEST OUT PRINTING SCORES
+				evaluate_score(players[i]);
+			}
+			System.out.printf("POST EVAL\n");
+			print_hands(players);
 
 			// Discard the cards for all of the players
 			for(int i = 1; i <= num_cards; i++) {
@@ -118,6 +119,15 @@ public class GameType {
 		}
 
 		return;
+	}
+	private static int evaluate_score(GameBot player) {
+		int score = player.eval_score();
+		
+		System.out.printf("SCORE %d\n", score);
+		
+		// TODO
+		
+		return score;
 	}
 	private static Deck make_deck() {
 		System.out.println("make_deck()");
@@ -142,60 +152,56 @@ public class GameType {
 		return;
 	}
 
-	private static void print_hands(GamePlayer[] players) {
+	private static void print_hands(GameBot[] players) {
 		for(int i = 0; i < num_players; i++) {
+			System.out.printf("Player %d's hand':\n", i);
 			int score = players[i].eval_score();
-			switch(players[i].eval_score()) {
+			int result = (score) % (21);
+			int high_card = (score - 1) % rank_map.length;
+			System.out.printf("score: %d\n", score % 21);
+			System.out.printf("high_card: %c\n", rank_map[high_card]);
+			switch(result) {
 				case 21:
-					System.out.printf("Player %d's hand':\n", i);
 					players[i].print_hand();
 					System.out.printf("Straight Flush!\n", i);
 					break;
 				case 20:
-					System.out.printf("Player %d's hand':\n", i);
 					players[i].print_hand();
 					System.out.printf("Four of a Kind!\n", i);
 					break;
 				case 19:
-					System.out.printf("Player %d's hand':\n", i);
 					players[i].print_hand();
 					System.out.printf("Full House\n", i);
 					break;
 				case 18:
-					System.out.printf("Player %d's hand':\n", i);
 					players[i].print_hand();
 					System.out.printf("Flush!\n", i);
 					break;
 				case 17:
-					System.out.printf("Player %d's hand':\n", i);
 					players[i].print_hand();
 					System.out.printf("Straight!\n", i);
 					break;
 				case 16:
-					System.out.printf("Player %d's hand':\n", i);
 					players[i].print_hand();
 					System.out.printf("Three of a Kind!\n", i);
 					break;
 				case 15:
-					System.out.printf("Player %d's hand':\n", i);
 					players[i].print_hand();
 					System.out.printf("Two Pair!\n", i);
 					break;
 				case 14:
-					System.out.printf("Player %d's hand':\n", i);
 					players[i].print_hand();
 					System.out.printf("One Pair!\n", i);
 					break;
 				default:
-					System.out.printf("Player %d's hand':\n", i);
 					players[i].print_hand();
-					System.out.printf("High Card: %c!\n", rank_map[score-1]);
+					System.out.printf("High Card: %c!\n", rank_map[high_card]);
 					break;
 			}
 		}
 		return;
 	}
-	private static void round_init(GamePlayer[] players) {
+	private static void round_init(GameBot[] players) {
 		// if we don't have enough cards after the last round
 		// add the discard pile to the deck
 		if(game_deck.get_num_cards() < num_players * num_cards) {
@@ -215,8 +221,8 @@ public class GameType {
 			}
 		}
 	}
-	private static int ace_exception(GamePlayer player) {
-		if(player.count_by_rank('A') > 0) {
+	private static int ace_exception(GameBot players) {
+		if(players.count_by_rank('A') > 0) {
 			return 1;
 		}
 		return 0;
