@@ -1,21 +1,17 @@
 package prog1;
 
-import java.util.Scanner;
-
 public class GameBot{
 	protected Hand my_hand; //make private later
 	private int player_id;
 	protected Deck discard = new Deck();
-	private boolean first_prompt = true;
-
 
 
 	protected char[] suit_map = {	'C', 'D', 'S', 'H'};
 
-	protected char[] rank_map = {	'A', '2', '3', '4', 
-									'5', '6', '7', '8', 
-									'9', 'T', 'J', 'Q', 
-									'K'};
+	protected char[] rank_map = {	'2', '3', '4', '5', 
+									'6', '7', '8', '9', 
+									'T', 'J', 'Q', 'K', 
+									'A'};
 
 	public int get_player_id() {
 		return player_id;
@@ -177,9 +173,8 @@ public class GameBot{
 				max_count = challenger_count;
 			}
 		}
-		// we can make Ace represent rank 13 in order to settle disputes
-		if(ace_high && count_by_rank('A') > count_by_rank(high_card_rank)) {
-			high_card_rank = 13;
+		if(!ace_high) {
+			high_card_rank = 4; // '5'
 		}
 		return high_card_rank;
 	}

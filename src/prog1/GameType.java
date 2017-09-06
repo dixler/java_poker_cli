@@ -12,10 +12,10 @@ public class GameType {
 	static Deck discard_deck;
 	static char[] suit_map = {	'C', 'D', 'S', 'H'};
 
-	static char[] rank_map = {	'A', '2', '3', '4', 
-								'5', '6', '7', '8', 
-								'9', 'T', 'J', 'Q', 
-								'K'};
+	static char[] rank_map = {	'2', '3', '4', '5', 
+								'6', '7', '8', '9', 
+								'T', 'J', 'Q', 'K', 
+								'A'};
 
 	public static void main(String[] args) {
 		// TODO take command line args or something
@@ -24,7 +24,7 @@ public class GameType {
 
 		// check if there are too many players
 		if(game_deck.get_num_cards() < num_players * num_cards) {
-			System.out.printf("You have too many friends");
+			System.out.printf("You have too many friends\n");
 			return;
 		}
 		
@@ -32,11 +32,10 @@ public class GameType {
 
 		GameBot[] players = new GameBot[num_players];
 		//int num_humans = 0;
-		//players[0] = new GamePlayer(0, num_cards);
+		players[0] = new GamePlayer(0, num_cards);
 		// TODO remember to add human player
 		
-		
-		for(int i = 0; i < num_players; i++) {
+		for(int i = 1; i < num_players; i++) {
 			players[i] = new GameBot(i, num_cards);
 		}
 
@@ -46,12 +45,13 @@ public class GameType {
 		//print_deck(game_deck);
 
 		// Begin game
-		for(int round = 0; round < 4; round++) {
+		for(int round = 0; round < 400; round++) {
 			System.out.printf("Round %d\n", round);
-			game_deck.print();
-			discard_deck.print();
+			//game_deck.print();
+			//discard_deck.print();
 
 			round_init(players);
+			print_hands(players);
 
 			// For each player allow them to discard
 			for(int i = 0; i < players.length; i++) {

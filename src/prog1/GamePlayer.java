@@ -20,6 +20,7 @@ public class GamePlayer extends GameBot{
 		ui_display_hand();
 		System.out.printf("Cards to swap: ");
 		// TODO INPUT
+		System.out.printf("SANITY: %d cards in discard\n", discard.get_num_cards());
 		// create a deck of cards to remove
 		handle_input(max_swaps);
 		for(int i = 0; i < discard.get_num_cards(); i++) {
@@ -41,7 +42,7 @@ public class GamePlayer extends GameBot{
 
 				if(id_discard >= 0 && id_discard < my_hand.get_num_cards()) {
 					discard.place_card(my_hand.get_card(id_discard));
-					my_hand.discard(id_discard);
+					//my_hand.discard(id_discard);
 				}
 				else if(id_discard == -1)
 					return;
