@@ -62,6 +62,7 @@ public class Deck {
 	}
 	public void print() {
 		// draw a card, print the card, then put it at the bottom
+		System.out.printf("deck_len: %d\n", num_cards);
 		for(int i = 0; i < num_cards; i++) {
 			Card drawn = draw_card();
 				System.out.printf("%c of %c\n", drawn.get_rank(), drawn.get_suit());

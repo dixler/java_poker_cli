@@ -92,7 +92,6 @@ public class GameBot{
 	public int eval_score() {
 		int[] pair_to_score = {14, 15, 16, 20, 19};
 		int win_type = 1;
-		int high_card = get_high_card();
 		if(is_straight(5) && is_flush(5)) {
 			win_type = 21;
 		}
@@ -110,9 +109,9 @@ public class GameBot{
 		}
 		if(pairness > win_type) {
 			win_type = pairness;
-			high_card = get_high_pair();
 		}
-		return win_type * high_card;
+
+		return win_type;
 	}
 
 	// there are faster searching algorithms for this
@@ -147,6 +146,7 @@ public class GameBot{
 		}
 		return false;
 	}
+	/*
 	private int get_high_card() {
 		int count = 0;
 		int rank_map_index;
@@ -157,7 +157,17 @@ public class GameBot{
 		}
 		return rank_map_index + 1;
 	}
-	private int get_high_pair() {
+	*/
+	public int get_high_card() {
+		boolean ace_high = true;
+		int player_score = eval_score();
+		if(player_score == 17 || player_score == 21) {
+			// must have only 1
+			if(count_by_rank('2') == 1) {
+				// ace is low A 2 3 4 5
+				ace_high = false;
+			}
+		}
 		int max_count = 0;
 		int high_card_rank = 0;
 		for(int i = 0; i < rank_map.length; i += 1) {
@@ -167,7 +177,11 @@ public class GameBot{
 				max_count = challenger_count;
 			}
 		}
-		return high_card_rank + 1;
+		// we can make Ace represent rank 13 in order to settle disputes
+		if(ace_high && count_by_rank('A') > count_by_rank(high_card_rank)) {
+			high_card_rank = 13;
+		}
+		return high_card_rank;
 	}
 	protected boolean is_flush(int target_flushed) {
 		// do we have enough cards
@@ -214,7 +228,7 @@ public class GameBot{
 		}
 		return score;
 	}
-	protected int count_by_rank(int rank) {
+	public int count_by_rank(int rank) {
 		int count = 0;
 		for(int i = 0; i < my_hand.get_num_cards(); i++) {
 			if(my_hand.get_rank(i) == rank)
@@ -408,8 +422,10 @@ public class GameBot{
 	public Deck turn(int max_swaps) {
 		for(int i = 0; i < max_swaps; i++) {
 			int id_discarded = bot_logic();
-			if(bot_logic() != -1)
+			if(bot_logic() != -1) {
 				discard.place_card(my_hand.get_card(id_discarded));
+				my_hand.discard(id_discarded);
+			}
 			else
 				break;
 		}

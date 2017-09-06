@@ -39,8 +39,10 @@ public class GamePlayer extends GameBot{
 			for(int i = 0; i < input_line.length && i < max_swaps; i++) {
 				id_discard = Integer.parseInt(input_line[i]) - 1;
 
-				if(id_discard >= 0 && id_discard < my_hand.get_num_cards())
+				if(id_discard >= 0 && id_discard < my_hand.get_num_cards()) {
 					discard.place_card(my_hand.get_card(id_discard));
+					my_hand.discard(id_discard);
+				}
 				else if(id_discard == -1)
 					return;
 			}

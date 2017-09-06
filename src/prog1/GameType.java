@@ -3,7 +3,7 @@ import java.util.Random;
 
 public class GameType {
 	static private Random rng = new Random();
-	static int num_bots = 3; // have dynamically determined at runtime
+	static int num_bots = 4; // have dynamically determined at runtime
 	static int num_humans = 0; // have dynamically determined at runtime
 	static int num_players = num_humans + num_bots; // have dynamically determined at runtime
 	static int num_cards = 5;
@@ -46,9 +46,10 @@ public class GameType {
 		//print_deck(game_deck);
 
 		// Begin game
-		for(int round = 0; round < 52; round++) {
+		for(int round = 0; round < 4; round++) {
 			System.out.printf("Round %d\n", round);
-			//print_deck(game_deck);
+			game_deck.print();
+			discard_deck.print();
 
 			round_init(players);
 
@@ -100,19 +101,43 @@ public class GameType {
 				print_hands(players);
 			}
 			//*/
-			print_hands(players);
-			/*
+			int winner = -1;
+			int max_score = -1;
+			int max_high_card = -1;
+			boolean tie = false;
 			for(int i = 0; i < players.length; i++) {
-				// TEST OUT PRINTING SCORES
-				System.out.printf("player %d score: %d\n", i, players[i].eval_score());
+				int cur_score = players[i].eval_score();
+				if(max_score < cur_score) {
+					tie = false;
+					max_score = cur_score;
+					max_high_card = players[i].get_high_card();
+					winner = i;
+				}
+				else if(max_score == cur_score) {
+					int cur_high_card = players[i].get_high_card();
+					// is the high_card the same?
+					if(max_high_card == cur_high_card)
+						tie = true;
+					// ah new high card
+					else if(max_high_card < cur_high_card) {
+						max_high_card = players[i].get_high_card();
+						winner = i;
+						tie = false;
+					}
+				}
 			}
-			*/
+			if(tie) {
+				System.out.printf("Tie!\n");
+			}
+			else {
+				System.out.printf("Player %d wins!\n", winner);
+			}
 			print_hands(players);
 
 			// Discard the cards for all of the players
-			for(int i = 1; i <= num_cards; i++) {
-				for(int j = 0; j < num_players; j++) {
-					discard_deck.place_card(players[j].discard(0));
+			for(int i = 0; i < num_players; i++) {
+				while(players[i].get_hand_size() > 0) {
+					discard_deck.place_card(players[i].discard(0));
 				}
 			}
 
@@ -147,11 +172,14 @@ public class GameType {
 	private static void print_hands(GameBot[] players) {
 		for(int i = 0; i < num_players; i++) {
 			System.out.printf("Player %d's hand':\n", i);
+			// evaluation of score is the win type * the high card
+			// score = win*high_card
+			// score
 			int score = players[i].eval_score();
-			int high_card = (score - 1) % rank_map.length;
-			int result = (score) / (high_card + 1);
-			System.out.printf("score: %d\n", score);
-			switch(result) {
+			int high_card_val = players[i].get_high_card(); //handles ace high exception
+			int high_card_index = high_card_val % 13; //handles ace high exception
+			//System.out.printf("score: %d\n", score);
+			switch(score) {
 				case 21:
 					players[i].print_hand();
 					System.out.printf("Straight Flush!\n", i);
@@ -186,9 +214,9 @@ public class GameType {
 					break;
 				default:
 					players[i].print_hand();
-					System.out.printf("High Card: %c!\n", rank_map[high_card]);
 					break;
 			}
+			System.out.printf("High Card: %c!\n", rank_map[high_card_index]);
 		}
 		return;
 	}
@@ -199,7 +227,7 @@ public class GameType {
 			// Place the discard deck under the deck
 			game_deck.combine(discard_deck);
 			// Shuffle the deck 
-			game_deck.shuffle_deck(rng);
+			//game_deck.shuffle_deck(rng);
 		}
 
 		// deal the cards
