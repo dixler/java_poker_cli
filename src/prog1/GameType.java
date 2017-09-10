@@ -58,7 +58,8 @@ public class GameType {
 		//print_deck(game_deck);
 
 		// Begin game
-		for(int round = 0; round < 100; round++) {
+		for(int round = 0; round < 1000; round++) {
+			game_deck.print(rank_map, suit_map);
 			System.out.printf("===============Round %d===============\n", round);
 			play_round();
 			reveal_hands(players);
@@ -73,6 +74,11 @@ public class GameType {
 
 		}
 		//setup_input.close();
+		//*
+		// check if conserved cards
+		game_deck.combine(discard_deck);
+		game_deck.print(rank_map, suit_map);
+		//*/
 		System.out.printf("Thanks for playing! Exiting...\n");
 
 		return;

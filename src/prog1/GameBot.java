@@ -52,6 +52,9 @@ public class GameBot{
 	public int get_hand_size() {
 		return my_hand.get_num_cards();
 	}
+	public Card discard(Card discarded){
+		return my_hand.discard(my_hand.find(discarded.get_rank(), discarded.get_suit()));
+	}
 	public Card discard(int index){
 		return my_hand.discard(index);
 	}
@@ -248,7 +251,7 @@ public class GameBot{
 			}
 		}
 		if(!ace_high) {
-			high_card_rank = 4; // '5'
+			high_card_rank = 3; // '5'
 		}
 		return high_card_rank;
 	}
