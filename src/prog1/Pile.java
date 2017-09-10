@@ -2,11 +2,11 @@ package prog1;
 import java.util.LinkedList;
 import java.util.Random;
 
-public class Deck {
+public class Pile {
 	private LinkedList<Card> card_list = new LinkedList<Card>();
 	private int num_cards;
 
-	public Deck() {
+	public Pile() {
 		num_cards = 0;
 		return;
 	}
@@ -31,7 +31,7 @@ public class Deck {
 	}
 
 	// moves the cards in the child deck into the parent deck
-	public void combine(Deck child){
+	public void combine(Pile child){
 		// 
 		card_list.addAll(child.card_list);
 		// clear old deck
@@ -47,7 +47,7 @@ public class Deck {
 		return card_list.remove(index);
 	}
 	public void shuffle_deck(Random rng) {
-		Deck shuffled = new Deck();
+		Pile shuffled = new Pile();
 
 		// extract a random card from the deck then place it into
 		// a temporary deck

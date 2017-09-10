@@ -1,7 +1,7 @@
 package prog1;
 
 public class Hand {
-	private Card[] cards;
+	public Card[] cards;
 	private int num_cards;
 	private int max_cards;
 	

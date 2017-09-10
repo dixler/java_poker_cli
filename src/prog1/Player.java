@@ -1,10 +1,10 @@
 package prog1;
 
-public class GameBot{
+public class Player{
 	protected Hand my_hand; //make private later
 	private int player_id;
 	private int win_class = 1;
-	protected Deck discard = new Deck();
+	protected Pile discard = new Pile();
 
 
 	protected char[] suit_map = {	'C', 'D', 'S', 'H'};
@@ -21,7 +21,7 @@ public class GameBot{
 	 * 
 	 * 
 	 */
-	public GameBot(int id, int num_cards) {
+	public Player(int id, int num_cards) {
 		my_hand = new Hand(num_cards);
 		player_id = id;
 		return;
@@ -546,7 +546,7 @@ public class GameBot{
 		}
 		return id_discard;
 	}
-	public Deck turn(int max_swaps) {
+	public Pile turn(int max_swaps) {
 		for(int i = 0; i < max_swaps; i++) {
 			int id_discarded = bot_logic();
 			if(bot_logic() != -1) {

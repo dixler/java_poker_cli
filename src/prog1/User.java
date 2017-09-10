@@ -4,14 +4,14 @@ import java.util.Scanner;
 
 // TODO rename functions with prefix indicating what it's modifying
 
-public class GamePlayer extends GameBot{
+public class User extends Player{
 	Scanner input = new Scanner(System.in).useDelimiter(" ");
 
-	public GamePlayer(int id, int num_cards) {
+	public User(int id, int num_cards) {
 		super(id, num_cards);
 		return;
 	}
-	private Deck ui(int max_swaps) {
+	private Pile ui(int max_swaps) {
 		System.out.printf("It's your turn\n");
 		if(my_hand.find_first_rank('A') != -1) {
 			System.out.printf("You have an Ace so you may hold onto your ace\n"
@@ -75,7 +75,7 @@ public class GamePlayer extends GameBot{
 		
 		return;
 	}
-	public Deck turn(int max_swaps) {
+	public Pile turn(int max_swaps) {
 		return ui(max_swaps);
 	}
 	private void ui_display_hand() {
