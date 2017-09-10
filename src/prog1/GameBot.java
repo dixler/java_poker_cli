@@ -3,6 +3,7 @@ package prog1;
 public class GameBot{
 	protected Hand my_hand; //make private later
 	private int player_id;
+	private int win_class = 1;
 	protected Deck discard = new Deck();
 
 
@@ -12,11 +13,27 @@ public class GameBot{
 									'6', '7', '8', '9', 
 									'T', 'J', 'Q', 'K', 
 									'A'};
+	/*
+	 * Constructor
+	 * player_id:	allows us to indicate the player who won
+	 * num_cards:	max number of cards in the player's hand
+	 * 				(used to construct my_hand)
+	 * 
+	 * 
+	 */
 	public GameBot(int id, int num_cards) {
 		my_hand = new Hand(num_cards);
 		player_id = id;
 		return;
 	}
+   /*
+    * FUNCTION:   int get_player_id()
+    * description:   
+    */
+   /*
+    * FUNCTION:   int get_player_id()
+    * description:   
+    */
 	public int get_player_id() {
 		return player_id;
 	}
@@ -24,6 +41,14 @@ public class GameBot{
 		my_hand.draw(dealt);
 		return;
 	}
+   /*
+    * FUNCTION:   int get_hand_size()
+    * description:   
+    */
+   /*
+    * FUNCTION:   int get_hand_size()
+    * description:   
+    */
 	public int get_hand_size() {
 		return my_hand.get_num_cards();
 	}
@@ -31,6 +56,14 @@ public class GameBot{
 		return my_hand.discard(index);
 	}
 
+   /*
+    * FUNCTION:   void print_hand()
+    * description:   
+    */
+   /*
+    * FUNCTION:   void print_hand()
+    * description:   
+    */
 	public void print_hand() {
 		// draw a card, print the card, then put it at the bottom
 		for(int i = 0; i < my_hand.get_num_cards(); i++) {
@@ -47,6 +80,10 @@ public class GameBot{
 
 	// TODO
 	/*
+      /*
+       * FUNCTION:   void order_hand()
+       * description:   
+       */
 	private void order_hand() {
 		for(int i = 0; i < my_hand.get_num_cards(); i++) {
 			// let temp be the first element
@@ -56,13 +93,15 @@ public class GameBot{
 			}
 		}
 	}
-	*/
 	/*
 	 * 5 Card Draw specific methods
 	 * 
 	 */
 	
 	/*
+	 * FUNCTION:	eval_score()
+	 * description:	evaluates the score and sets win_class to that score;
+	 * 
 	 * Return Values
 	 * ----------------------------------------------
 	 * Straight Flush	21	|	Four of a Kind	20
@@ -89,17 +128,21 @@ public class GameBot{
 	 * ----------------------------------------------
 	 */
 	
+      /*
+       * FUNCTION:   int eval_score()
+       * description:   
+       */
 	public int eval_score() {
 		int[] pair_to_score = {14, 15, 16, 20, 19};
-		int win_type = 1;
+		win_class = 1;
 		if(is_straight(5) && is_flush(5)) {
-			win_type = 21;
+			win_class = 21;
 		}
 		else if(is_straight(5)) {
-			win_type = 17;
+			win_class = 17;
 		}
 		else if(is_flush(5)) {
-			win_type = 18;
+			win_class = 18;
 		}
 
 		// handle rankings based on duplicates
@@ -107,20 +150,52 @@ public class GameBot{
 		if(pairness > 0) {
 			pairness = pair_to_score[pairness-1];
 		}
-		if(pairness > win_type) {
-			win_type = pairness;
+		if(pairness > win_class) {
+			win_class = pairness;
 		}
 
-		return win_type;
+		return win_class;
+	}
+	
+
+	/*
+	 * FUNCTION:	   int get_win_type()
+	 * description:	used in score resolution
+	 */
+	public int get_win_type() {
+		return win_class;
+	}
+	/*
+	 * FUNCTION:	   void set_is_loser()
+	 * description:	used in high card resolution(the client can set the win_class to 
+	 * 				   negative as a signal to itself)
+	 */
+	public void set_is_loser() {
+		win_class = -1*Math.abs(win_class);
+		return;
 	}
 
 	// there are faster searching algorithms for this
-	private boolean holding_one_lesser(int rank) {
+	/*
+	 * FUNCTION:	   boolean is_holding_one_lesser(int rank)
+	 * description:	determines if my_hand has a card of the rank of one lesser than it
+	 * 				   i.e. one lesser than 'A' is 'K', '10' is '9'... etc.
+	 * 				   returns TRUE if the card 1 lesser is in my_hand
+	 * 				   returns FALSE if it is not in my_hand
+	 */
+	private boolean is_holding_one_lesser(int rank) {
 		if(this.count_by_rank((rank - 1 + rank_map.length) % rank_map.length) == 1) {
 			return true;
 		}
 		return false;
 	}
+
+	/*
+	 * FUNCTION:	   is_straight(int target_straight)
+	 * description:	takes the number of cards we want in a row and 
+	 * 				   returns TRUE if we have that many cards in a row
+	 * 				   returns FALSE if we do not
+	 */
 	protected boolean is_straight(int target_straight) {
 		for(int i = 0; i < rank_map.length; i++) {
 			// if it's a straight no duplicates
@@ -133,11 +208,11 @@ public class GameBot{
 			// TODO:	count_by_rank(4) will break on the case of there being two of the same
 			// 			rank, but since one pair will take priority over a near straight, it
 			//			doesn't ever come down to this. Noting for clarity if there's ever a refactor
-			if(count_by_rank(i) == 1 && holding_one_lesser(i)) {
+			if(count_by_rank(i) == 1 && is_holding_one_lesser(i)) {
 				num_adjacent += 1;
 			}
 		}
-		// TODO: Fix HARD EXCEPTION
+		// TODO: Fix HARD EXCEPTION(it works since we don't allow wrap around straights
 		if(count_by_rank('K') == 1 && count_by_rank('2') == 1)
 			return false;
 
@@ -146,18 +221,13 @@ public class GameBot{
 		}
 		return false;
 	}
+
 	/*
-	private int get_high_card() {
-		int count = 0;
-		int rank_map_index;
-		for(rank_map_index = rank_map.length - 1; rank_map_index > 0; rank_map_index += -1) {
-			count = count_by_rank(rank_map[rank_map_index]);
-			if(count > 0)
-				break;
-		}
-		return rank_map_index + 1;
-	}
-	*/
+	 * FUNCTION:	   int get_high_card()
+	 * description:	returns the raw INTEGER rank of the most paired card
+	 * 				   (or if there's a tie, the most paired card with the 
+	 * 				   highest rank)
+	 */
 	public int get_high_card() {
 		boolean ace_high = true;
 		int player_score = eval_score();
@@ -182,6 +252,12 @@ public class GameBot{
 		}
 		return high_card_rank;
 	}
+
+	/*
+	 * FUNCTION:	   boolean is_flush(int target_flushed)
+	 * description:	takes the number of cards that we want to have the same suit
+	 * 				   returns TRUE if we have enough, FALSE if we do not have enough cards
+	 */
 	protected boolean is_flush(int target_flushed) {
 		// do we have enough cards
 		if(my_hand.get_num_cards() < target_flushed)
@@ -194,14 +270,16 @@ public class GameBot{
 		}
 		return false;
 	}
-	/*
-	 * return values:
-	 * 		full_house = 5
-	 * 		four_of_a_kind = 4
-	 * 		three_of_a_kind = 3
-	 * 		two_pair = 2
-	 * 		one_pair = 1
-	 * 		nothing = 0
+   /*
+    * FUNCTION:      int is_pair()
+    * description:   
+	 *                return values:
+	 * 		         full_house = 5
+	 * 		         four_of_a_kind = 4
+	 * 		         three_of_a_kind = 3
+	 * 		         two_pair = 2
+	 * 		         one_pair = 1
+	 * 		         nothing = 0
 	 */
 	private int is_pair() {
 		int score = 0;
@@ -227,6 +305,10 @@ public class GameBot{
 		}
 		return score;
 	}
+   /*
+    * FUNCTION:   	int count_by_rank(int rank)
+    * description:	returns number of cards by raw rank
+    */
 	public int count_by_rank(int rank) {
 		int count = 0;
 		for(int i = 0; i < my_hand.get_num_cards(); i++) {
@@ -235,6 +317,10 @@ public class GameBot{
 		}
 		return count;
 	}
+   /*
+    * FUNCTION:		int count_by_rank(char rank)
+    * description:	returns the number of cards of certain rank(by flavor name)
+    */
 	public int count_by_rank(char rank) {
 		int count = 0;
 		for(int i = 0; i < my_hand.get_num_cards(); i++) {
@@ -245,6 +331,10 @@ public class GameBot{
 		}
 		return count;
 	}
+   /*
+    * FUNCTION:		int count_by_suit(char suit)
+    * description:   returns the number of cards of certain suit(by flavor name)
+    */
 	public int count_by_suit(char suit) {
 		int count = 0;
 		for(int i = 0; i < my_hand.get_num_cards(); i++) {
@@ -255,6 +345,10 @@ public class GameBot{
 		}
 		return count;
 	}
+   /*
+    * FUNCTION:		int count_by_suit(int suit)
+    * description:	returns number of cards by raw suit(0,1,2,3)
+    */
 	protected int count_by_suit(int suit) {
 		int count = 0;
 		for(int i = 0; i < my_hand.get_num_cards(); i++) {
@@ -263,6 +357,11 @@ public class GameBot{
 		}
 		return count;
 	}
+   /*
+    * FUNCTION:		int find_isolated_card()
+    * description:	returns the rank of a card with no cards after or before it
+    * 				i.e. (hand contains 6 but not 5 and not 7)
+    */
 	private int find_isolated_card() {
 		int rank_discard = -1;
 		// iterate through the hand and find anything with only one of it
@@ -279,6 +378,10 @@ public class GameBot{
 		// get that lone card's index and return it for discarding
 		return my_hand.find_first_rank(rank_discard);
 	}
+   /*
+    * FUNCTION:      int find_lone_suit()
+    * description:   finds the odd card out and returns its raw rank
+    */
 	private int find_lone_suit() {
 		int suit_discard = -1;
 		// iterate through the hand and find anything with only one of it
@@ -295,8 +398,12 @@ public class GameBot{
 		return -1;
 	}
 	/*
-	 * we return an index of an unpaired card(a card with no other cards of the same rank)
 	 */
+   /*
+    * FUNCTION:      int find_unpaired()
+    * description:   we return an index of an unpaired card(a card with no other cards of the same rank)
+    * notes:         BOT SPECIFIC
+    */
 	private int find_unpaired() {
 		int rank_discard = -1;
 		// iterate through the hand and find anything with only one of it
@@ -312,19 +419,29 @@ public class GameBot{
 		}
 		return -1;
 	}
+   /*
+    * FUNCTION:      int handle_(pair*)()
+    * description:   the current pair handler works as a 
+    *                general solution for handling lone cards
+    *                given the current bot's algorithm
+    */
 	private int handle_one_pair() {
 		return find_unpaired();
 	}
-	private int handle_two_pair() {
-		return find_unpaired();
-	}
-	private int handle_three_of_a_kind() {
-		return find_unpaired();
-	}
-	private int handle_four_of_a_kind() {
-		return find_unpaired();
-	}
+         private int handle_two_pair() {
+            return find_unpaired();
+         }
+         private int handle_three_of_a_kind() {
+            return find_unpaired();
+         }
+         private int handle_four_of_a_kind() {
+            return find_unpaired();
+         }
 
+   /*
+    * UNIMPLEMENTED
+    *
+	/*
 	public Deck remove_unmatched(int max_swaps) {
 		for(int i = 0; i < max_swaps; i++) {
 			int id_discarded = bot_logic();
@@ -335,7 +452,20 @@ public class GameBot{
 		}
 		return discard;
 	}
+	*/
+	
+   /*
+    * FUNCTION:      Card scoring_discard_high_card()
+    * description:   if we have a tie, we're going to need to remove the high card and re-evaluate the scores
+    */
+	public Card scoring_discard_high_card() {
+		return my_hand.discard(my_hand.find_first_rank(get_high_card()));
+	}
 
+   /*
+    * FUNCTION:   int bot_logic()
+    * description:   
+    */
 	protected int bot_logic() {
 		int id_discard = -1;
 		int score = this.eval_score();

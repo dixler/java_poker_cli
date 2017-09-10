@@ -20,10 +20,14 @@ public class GameType {
 								'A'};
 
 	public static void main(String[] args) {
+		/*
 		Scanner setup_input = new Scanner(System.in);
 		System.out.printf("Number of computer players: ");
 		int num_bots = setup_input .nextInt();
 		int num_players = 1 + num_bots; // have dynamically determined at runtime
+		*/
+		// TEMPORARY
+		int num_players = 4; // have dynamically determined at runtime
 
 
 		// TODO take command line args or something
@@ -33,18 +37,18 @@ public class GameType {
 		// check if there are too many players
 		if(game_deck.get_num_cards() < num_players * num_cards) {
 			System.out.printf("You have too many friends\n");
-			setup_input.close();
+			//setup_input.close();
 			return;
 		}
 		
 		// create the deck
 
 		players = new GameBot[num_players];
-		//int num_humans = 0;
-		players[0] = new GamePlayer(0, num_cards);
+
+		//players[0] = new GamePlayer(0, num_cards);
 		// TODO remember to add human player
 		
-		for(int i = 1; i < num_players; i++) {
+		for(int i = 0; i < num_players; i++) {
 			players[i] = new GameBot(i, num_cards);
 		}
 
@@ -54,7 +58,7 @@ public class GameType {
 		//print_deck(game_deck);
 
 		// Begin game
-		for(int round = 0; round < 1; round++) {
+		for(int round = 0; round < 100; round++) {
 			System.out.printf("===============Round %d===============\n", round);
 			play_round();
 			reveal_hands(players);
@@ -68,7 +72,7 @@ public class GameType {
 			}
 
 		}
-		setup_input.close();
+		//setup_input.close();
 		System.out.printf("Thanks for playing! Exiting...\n");
 
 		return;
@@ -125,43 +129,109 @@ public class GameType {
 	
 	private static void eval_winner() {
 		int winner = -1;
-		int max_score = -1;
-		int max_high_card = -1;
 		boolean tie = false;
-		for(int i = 0; i < players.length; i++) {
-			int cur_score = players[i].eval_score();
-			if(max_score < cur_score) {
-				tie = false;
-				max_score = cur_score;
-				max_high_card = players[i].get_high_card();
-				winner = i;
+		boolean first = true;
+		int true_score = -1;
+		int true_high_card = -1;
+		do {
+			int max_score = -1;
+			// TODO remove this debug text
+			if(tie) {
+				System.out.printf("---------------------HighCard resolution---------------------\n");
+				System.out.printf("---------------------HighCard resolution---------------------\n");
+				System.out.printf("---------------------HighCard resolution---------------------\n");
+				System.out.printf("---------------------HighCard resolution---------------------\n");
+				System.out.printf("---------------------HighCard resolution---------------------\n");
+				reveal_hands(players);
+				System.out.printf("---------------------HighCard resolution---------------------\n");
+				System.out.printf("---------------------HighCard resolution---------------------\n");
+				System.out.printf("---------------------HighCard resolution---------------------\n");
+				System.out.printf("---------------------HighCard resolution---------------------\n");
+				System.out.printf("---------------------HighCard resolution---------------------\n");
 			}
-			else if(max_score == cur_score) {
-				int cur_high_card = players[i].get_high_card();
-				// is the high_card the same?
-				if(max_high_card == cur_high_card /*&& !high_card win*/) {
-					resolve_high_card();
-					tie = true;
+			tie = false;
+			int max_high_card = -1;
+			if(players[0].get_hand_size() == 0)
+				break;
+			for(int i = 0; i < players.length; i++) {
+				int cur_score = 0;
+				if(players[i].get_win_type() > 0)
+					cur_score = players[i].eval_score();
+				if(cur_score > 0) {
+					if(max_score < cur_score) {
+						max_score = cur_score;
+						max_high_card = players[i].get_high_card();
+						winner = i;
+						tie = false;
+					}
+					else if(max_score == cur_score) {
+						int cur_high_card = players[i].get_high_card();
+						// is the high_card the same?
+						if(max_high_card == cur_high_card) {
+							tie = true;
+						}
+						// ah new high card
+						else if(max_high_card < cur_high_card) {
+							max_high_card = players[i].get_high_card();
+							winner = i;
+							tie = false;
+						}
+						else {
+							// we didn't beat the high card
+							players[i].set_is_loser();
+							
+						}
+					}
+					else {
+						players[i].set_is_loser();
+					}
 				}
-				// ah new high card
-				else if(max_high_card < cur_high_card) {
-					max_high_card = players[i].get_high_card();
-					winner = i;
-					tie = false;
-				}
+				discard_deck.place_card(players[i].scoring_discard_high_card());
 			}
-		}
+			if(first) {
+				true_score = max_score;
+				true_high_card = max_high_card;
+				first = false;
+			}
+		} while(tie);
+			switch(true_score) {
+				case 21:
+					System.out.printf("Straight Flush!\n");
+					break;
+				case 20:
+					System.out.printf("Four of a Kind!\n");
+					break;
+				case 19:
+					System.out.printf("Full House\n");
+					break;
+				case 18:
+					System.out.printf("Flush!\n");
+					break;
+				case 17:
+					System.out.printf("Straight!\n");
+					break;
+				case 16:
+					System.out.printf("Three of a Kind!\n");
+					break;
+				case 15:
+					System.out.printf("Two Pair!\n");
+					break;
+				case 14:
+					System.out.printf("One Pair!\n");
+					break;
+				default:
+					System.out.printf("High Card: %c!\n", rank_map[true_high_card]);
+					break;
+			}
+
 		if(tie) {
+			// we can discard the high card and check again(recursive-esque-ly)
 			System.out.printf("Tie!\n");
 		}
 		else {
 			System.out.printf("Player %d wins!\n", winner);
 		}
 		return;
-	}
-	
-	private static int resolve_high_card() {
-		
 	}
 	
 	private static void shuffle_deck(Deck game_deck) {
@@ -172,6 +242,7 @@ public class GameType {
 		return;
 	}
 
+	/*
 	private static void reveal_hands(GameBot[] players) {
 		for(int i = 0; i < players.length; i++) {
 			System.out.printf("Player %d's hand':\n", i);
@@ -219,6 +290,14 @@ public class GameType {
 		}
 		return;
 	}
+	*/
+	private static void reveal_hands(GameBot[] players) {
+		for(int i = 0; i < players.length; i++) {
+			System.out.printf("Player %d's hand':\n", i);
+			players[i].print_hand();
+		}
+		return;
+	}
 	private static void round_init(GameBot[] players) {
 		// if we don't have enough cards after the last round
 		// add the discard pile to the deck
@@ -231,7 +310,7 @@ public class GameType {
 
 		// deal the cards
 		for(int i = 0; i < num_cards; i++) {
-			Card	drawn;
+			Card drawn;
 			for(int j = 0; j < players.length; j++) {
 				drawn = game_deck.draw_card();
 				players[j].draw_card(drawn);
