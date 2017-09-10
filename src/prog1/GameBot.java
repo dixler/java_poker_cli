@@ -12,7 +12,11 @@ public class GameBot{
 									'6', '7', '8', '9', 
 									'T', 'J', 'Q', 'K', 
 									'A'};
-
+	public GameBot(int id, int num_cards) {
+		my_hand = new Hand(num_cards);
+		player_id = id;
+		return;
+	}
 	public int get_player_id() {
 		return player_id;
 	}
@@ -258,11 +262,6 @@ public class GameBot{
 				count += 1;
 		}
 		return count;
-	}
-	public GameBot(int id, int num_cards) {
-		my_hand = new Hand(num_cards);
-		player_id = id;
-		return;
 	}
 	private int find_isolated_card() {
 		int rank_discard = -1;

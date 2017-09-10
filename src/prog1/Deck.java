@@ -60,17 +60,17 @@ public class Deck {
 		combine(shuffled);
 		return;
 	}
-	public void print() {
+	public void print(char[] rank_map, char[] suit_map) {
 		// draw a card, print the card, then put it at the bottom
 		System.out.printf("deck_len: %d\n", num_cards);
 		for(int i = 0; i < num_cards; i++) {
 			Card drawn = draw_card();
-				System.out.printf("%c of %c\n", drawn.get_rank(), drawn.get_suit());
+				System.out.printf("%c of %c\n", rank_map[drawn.get_rank()], suit_map[drawn.get_suit()]);
 			place_card_bottom(drawn);
 		}
 		return;
 	}
-	private void removeAll(){
+	public void removeAll(){
 		card_list.clear();
 		num_cards = 0;
 		return;

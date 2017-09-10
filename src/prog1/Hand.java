@@ -5,9 +5,8 @@ public class Hand {
 	private int num_cards;
 	private int max_cards;
 	
-
-	public Hand(int num_cards) {
-		max_cards = num_cards;
+	public Hand(int defined_max_cards) {
+		max_cards = defined_max_cards;
 		cards = new Card[max_cards];
 		num_cards = 0;
 	}
@@ -16,7 +15,7 @@ public class Hand {
 		return num_cards;
 	}
 	public int get_max_cards() {
-		return num_cards;
+		return max_cards;
 	}
 	public void draw(Card my_card) {
 		//System.out.printf("drawing: %c of %c\n", my_card.get_rank(), my_card.get_suit());
@@ -25,6 +24,9 @@ public class Hand {
 		return;
 	}
 	public Card discard(int index) {
+		if(index < 0 || index >= cards.length) {
+			return null;
+		}
 		Card discarded = cards[index];
 		num_cards += -1;
 		shift_left(index);
@@ -50,6 +52,12 @@ public class Hand {
 				return i;
 		}
 		return -1;
+	}
+	public void print(char[] rank_map, char[] suit_map) {
+		for(int i = 0; i < num_cards; i++) {
+			System.out.printf("%c%c\n", rank_map[cards[i].get_rank()], suit_map[cards[i].get_suit()]);
+		}
+		return;
 	}
 	public int get_rank(int index) {
 		return cards[index].get_rank();
