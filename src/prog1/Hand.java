@@ -48,7 +48,8 @@ public class Hand {
        * description:   was implemented last, simplification of other 
        * 				methods could yield better runtime(not bubble 
        * 				sorting could yield better runtime too)
-       * 				EDIT: DOUBLE BUBBLE!!!!!!!
+       * 				EDIT:	DOUBLE BUBBLE!!!!!!!(well bubble sort 
+       * 						is stable so it's alright I guess.
        */
 	private void order_hand() {
 		// yep, we're bubble sorting(sue me)
@@ -56,7 +57,9 @@ public class Hand {
 		while(i < get_num_cards()) {
 			// let temp be the first element
 			for(int j = i+1; j < get_num_cards(); j++) {
-				// if there's a card lesser than temp, swap temp and that card
+				// if there's a card greater than the card at card[i], swap card[j] and that card
+				// gets the high card accidentally, but more importantly, puts the cards in an order
+				// that sorting by occurrence will yield desired results
 				if(this.cards[i].get_rank() < this.cards[j].get_rank()) {
 					// swap
 					Card temp = this.cards[j];
@@ -71,7 +74,7 @@ public class Hand {
 		while(i < get_num_cards()) {
 			// let temp be the first element
 			for(int j = i+1; j < get_num_cards(); j++) {
-				// if there's a card lesser than temp, swap temp and that card
+				// if there are more copies of a card lesser than temp, swap temp and that card
 				if(get_num_rank(cards[i].get_rank()) < get_num_rank(cards[j].get_rank())) {
 					// swap
 					Card temp = this.cards[j];
