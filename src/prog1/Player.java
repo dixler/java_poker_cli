@@ -78,21 +78,6 @@ public class Player{
 		return;
 	}
 
-	// TODO
-	/*
-      /*
-       * FUNCTION:   void order_hand()
-       * description:   
-       */
-	private void order_hand() {
-		for(int i = 0; i < my_hand.get_num_cards(); i++) {
-			// let temp be the first element
-			Card temp = my_hand.get_card(i);
-			for(int j = i; j < my_hand.get_num_cards(); j++) {
-				// if there's a card lesser than temp, swap temp and that card
-			}
-		}
-	}
 	/*
 	 * 5 Card Draw specific methods
 	 * 

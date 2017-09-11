@@ -29,6 +29,30 @@ public class Hand {
 	public int get_max_cards() {
 		return max_cards;
 	}
+      /*
+       * FUNCTION:   void order_hand()
+       * description:   was implemented last, simplification of other 
+       * 				methods could yield better runtime(not bubble 
+       * 				sorting could yield better runtime too)
+       */
+	private void order_hand() {
+		// yep, we're bubble sorting(sue me)
+		int i = 0;
+		while(i < get_num_cards()) {
+			// let temp be the first element
+			for(int j = i+1; j < get_num_cards(); j++) {
+				// if there's a card lesser than temp, swap temp and that card
+				if(this.cards[i].get_rank() > this.cards[j].get_rank()) {
+					// swap
+					Card temp = this.cards[j];
+					this.cards[j] = this.cards[i];
+					this.cards[i] = temp;
+				}
+			}
+			i += 1;
+		}
+		return;
+	}
    /*
     * FUNCTION:   public void draw(Card my_card);
     * description:   draws a card to the hand
@@ -37,6 +61,7 @@ public class Hand {
 		//System.out.printf("drawing: %c of %c\n", my_card.get_rank(), my_card.get_suit());
 		cards[num_cards] = my_card;
 		num_cards += 1;
+		order_hand();
 		return;
 	}
    /*
@@ -50,7 +75,7 @@ public class Hand {
 		Card discarded = cards[index];
 		num_cards += -1;
 		shift_left(index);
-
+		order_hand();
 		return discarded;
 	}
    /*
