@@ -29,11 +29,26 @@ public class Hand {
 	public int get_max_cards() {
 		return max_cards;
 	}
+	
+	
+	/* 
+	 * FUNCTION: int get_num_rank(int rank)
+	 * description:	helper function in order_hand();
+	 */
+	private int get_num_rank(int rank) {
+		int count = 0;
+		for(int i = 0; i < this.num_cards; i++) {
+			if(cards[i].get_rank() == rank)
+				count += 1;
+		}
+		return count;
+	}
       /*
        * FUNCTION:   void order_hand()
        * description:   was implemented last, simplification of other 
        * 				methods could yield better runtime(not bubble 
        * 				sorting could yield better runtime too)
+       * 				EDIT: DOUBLE BUBBLE!!!!!!!
        */
 	private void order_hand() {
 		// yep, we're bubble sorting(sue me)
@@ -42,7 +57,22 @@ public class Hand {
 			// let temp be the first element
 			for(int j = i+1; j < get_num_cards(); j++) {
 				// if there's a card lesser than temp, swap temp and that card
-				if(this.cards[i].get_rank() > this.cards[j].get_rank()) {
+				if(this.cards[i].get_rank() < this.cards[j].get_rank()) {
+					// swap
+					Card temp = this.cards[j];
+					this.cards[j] = this.cards[i];
+					this.cards[i] = temp;
+				}
+			}
+			i += 1;
+		}
+		// yep we're doing it again
+		i = 0;
+		while(i < get_num_cards()) {
+			// let temp be the first element
+			for(int j = i+1; j < get_num_cards(); j++) {
+				// if there's a card lesser than temp, swap temp and that card
+				if(get_num_rank(cards[i].get_rank()) < get_num_rank(cards[j].get_rank())) {
 					// swap
 					Card temp = this.cards[j];
 					this.cards[j] = this.cards[i];

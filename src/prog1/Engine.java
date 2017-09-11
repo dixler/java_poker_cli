@@ -3,21 +3,25 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Engine {
-	static private Random rng = new Random();
-	static int num_cards = 5;
-	static int max_discard = 3;
-
-	static Pile game_deck;
-	static Pile discard_deck;
-	static Player[] players;
+	// define the Random Number Generator
+		static private Random rng = new Random();
+	// various data structures
+		static Pile game_deck;
+		static Pile discard_deck;
+		static Player[] players;
 	
+	// set game variables
+		static int num_cards = 5;
+		static int max_discard = 3;
 
-	static char[] suit_map = {	'C', 'D', 'S', 'H'};
+	// maps the raw rank values to the cards
+		static char[] suit_map = {	'C', 'D', 'S', 'H'};
 
-	static char[] rank_map = {	'2', '3', '4', '5', 
-								'6', '7', '8', '9', 
-								'T', 'J', 'Q', 'K', 
-								'A'};
+	// maps the raw suit values to the cards
+		static char[] rank_map = {	'2', '3', '4', '5', 
+									'6', '7', '8', '9', 
+									'T', 'J', 'Q', 'K', 
+									'A'};
 
 	public static void main(String[] args) {
 
@@ -45,15 +49,13 @@ public class Engine {
 			players = new Player[num_players];
 
 			// populate player array
-			players[0] = new User(0, num_cards);
-			for(int i = 1; i < num_players; i++) {
+			//players[0] = new User(0, num_cards);
+			for(int i = 0; i < num_players; i++) {
 				players[i] = new Player(i, num_cards);
 			}
 
-		
-
 		// Begin game
-			for(int round = 0; round < 4; round++) {
+			for(int round = 0; round < 100; round++) {
 				System.out.printf("===============Round %d===============\n", round);
 				play_round();
 				reveal_hands(players);
@@ -66,6 +68,10 @@ public class Engine {
 					}
 				}
 			}
+			/*
+			game_deck.combine(discard_deck);
+			game_deck.print(rank_map, suit_map);
+			*/
 
 		System.out.printf("Thanks for playing! Exiting...\n");
 
@@ -112,11 +118,11 @@ public class Engine {
 
 				if(game_deck.get_num_cards() == 0) {
 					// Shuffle the discard pile
-					discard_deck.shuffle_deck(rng);
+					shuffle_deck(discard_deck);
 					// Place the shuffled discard pile under the deck
 					game_deck.combine(discard_deck);
-					System.out.printf("The discarded cards have been shuffled and \n"
-									+ "have replenished the deck\n");
+					System.out.printf("[NOTE] The discarded cards have been shuffled \n"
+									+ "and have replenished the deck\n");
 				}
 				// deal a card from the deck
 				players[i].draw_card(game_deck.draw_card());
@@ -196,12 +202,11 @@ public class Engine {
 		
 		// print out round result
 		if(tie) {
-			// we can discard the high card and check again(recursive-esque-ly)
 			System.out.printf("Tie!\n");
 		}
 		else {
-			if(winner != 0) System.out.printf("Player %d wins!\n", winner);
-			else System.out.printf("You win!\n");
+			if(winner != 0) System.out.printf("Player %d wins with a ", winner);
+			else System.out.printf("You win with a ");
 			switch(true_score) {
 				case 21:
 					System.out.printf("Straight Flush!\n");
@@ -237,7 +242,6 @@ public class Engine {
 	
 	// shuffles the deck
 	private static void shuffle_deck(Pile game_deck) {
-		//System.out.println("shuffle_deck()");
 		game_deck.shuffle_deck(rng);
 		return;
 	}
@@ -245,9 +249,39 @@ public class Engine {
 	// display everyone's hands
 	private static void reveal_hands(Player[] players) {
 		for(int i = 0; i < players.length; i++) {
+			players[i].eval_score();
 			if(i != 0) System.out.printf("Player %d's hand':\n", i);
 			else System.out.printf("Your hand':\n");
 			players[i].print_hand();
+			switch(players[i].get_player_score()) {
+				case 21:
+					System.out.printf("Straight Flush!\n");
+					break;
+				case 20:
+					System.out.printf("Four of a Kind!\n");
+					break;
+				case 19:
+					System.out.printf("Full House\n");
+					break;
+				case 18:
+					System.out.printf("Flush!\n");
+					break;
+				case 17:
+					System.out.printf("Straight!\n");
+					break;
+				case 16:
+					System.out.printf("Three of a Kind!\n");
+					break;
+				case 15:
+					System.out.printf("Two Pair!\n");
+					break;
+				case 14:
+					System.out.printf("One Pair!\n");
+					break;
+				default:
+					System.out.printf("High Card: %c!\n", rank_map[players[i].get_high_card()]);
+					break;
+			}
 		}
 		return;
 	}
@@ -257,12 +291,12 @@ public class Engine {
 		// if we don't have enough cards after the last round
 		// add the discard pile to the deck
 		if(game_deck.get_num_cards() < players.length * num_cards) {
+			// Shuffle the deck 
+			shuffle_deck(discard_deck);
 			// Place the discard deck under the deck
 			game_deck.combine(discard_deck);
-			// Shuffle the deck 
-			game_deck.shuffle_deck(rng);
-			System.out.printf("The discarded cards have been placed under the \n"
-							+ "deck and the deck has been shuffled\n\n");
+			System.out.printf("[NOTE] The discarded cards have been shuffled \n"
+							+ "and placed under the deck\n\n");
 		}
 
 		// deal the cards
