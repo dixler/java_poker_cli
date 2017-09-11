@@ -7,5 +7,8 @@ test: Engine.class
 	java Engine
 
 clean: Engine.class
-	rm *.class
+	rm *.class *.zip
+
+kdixle2proj1.zip: 
+	zip -r kdixle2proj1.zip ../prog1 
 	

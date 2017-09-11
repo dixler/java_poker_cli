@@ -15,7 +15,9 @@ public class Player{
 									'T', 'J', 'Q', 'K', 
 									'A'};
 	/*
-	 * Constructor
+	 * Constructor:   contains bot logic and various score evaluation
+    *                methods
+    *
 	 * player_id:	allows us to indicate the player who won
 	 * num_cards:	max number of cards in the player's hand
 	 * 				(used to construct my_hand)

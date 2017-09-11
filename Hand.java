@@ -5,7 +5,7 @@ public class Hand {
 	
    /*
     * FUNCTION:   public Hand(int defined_max_cards)();
-    * description:   constructor
+    * description:   contains the cards that the player is holding
     */
 	public Hand(int defined_max_cards) {
 		max_cards = defined_max_cards;

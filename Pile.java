@@ -7,7 +7,7 @@ public class Pile {
 
    /*
     * FUNCTION:   public Pile();
-    * description:   constructor
+    * description:   used to hold the deck and various discard piles
     */
 	public Pile() {
 		num_cards = 0;
