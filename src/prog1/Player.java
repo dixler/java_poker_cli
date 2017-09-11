@@ -30,10 +30,6 @@ public class Player{
     * FUNCTION:   int get_player_id()
     * description:   
     */
-   /*
-    * FUNCTION:   int get_player_id()
-    * description:   
-    */
 	public int get_player_id() {
 		return player_id;
 	}
@@ -45,15 +41,8 @@ public class Player{
     * FUNCTION:   int get_hand_size()
     * description:   
     */
-   /*
-    * FUNCTION:   int get_hand_size()
-    * description:   
-    */
 	public int get_hand_size() {
 		return my_hand.get_num_cards();
-	}
-	public Card discard(Card discarded){
-		return my_hand.discard(my_hand.find(discarded.get_rank(), discarded.get_suit()));
 	}
 	public Card discard(int index){
 		return my_hand.discard(index);
@@ -516,7 +505,7 @@ public class Player{
 					int kept_card_index = -1;
 					boolean has_ace = false;
 					// do we have an ace?
-					kept_card_index = my_hand.find_first_rank(0);
+					kept_card_index = my_hand.find_first_rank(12);
 
 					if(kept_card_index != -1) {
 						has_ace = true;

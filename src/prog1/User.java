@@ -19,7 +19,7 @@ public class User extends Player{
 							+ "(discarding the Ace with 4 cards will only\n"
 							+ "discard the first 3 cards");
 		}
-		System.out.printf("Select %d cards(1-%d) to swap then press enter.\n", max_swaps, my_hand.get_num_cards());
+		System.out.printf("Select %d cards(1-%d) to swap then press enter(-1 to keep your hand).\n", max_swaps, my_hand.get_num_cards());
 		ui_display_hand();
 		System.out.printf("Cards to swap: ");
 		// TODO INPUT

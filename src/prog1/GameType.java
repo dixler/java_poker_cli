@@ -20,43 +20,40 @@ public class GameType {
 								'A'};
 
 	public static void main(String[] args) {
-		//*
-		Scanner setup_input = new Scanner(System.in);
-		System.out.printf("Number of computer players: ");
-		int num_bots = setup_input .nextInt();
-		int num_players = 1 + num_bots; // have dynamically determined at runtime
-		/* TEMPORARY
-		int num_players = 4; // have dynamically determined at runtime
-		//*/
 
+		// Prompt for number of computer players
+			Scanner setup_input = new Scanner(System.in);
+			System.out.printf("Number of computer players: ");
+			int num_bots = setup_input.nextInt();
+			int num_players = 1 + num_bots; // have dynamically determined at runtime
 
 		// create the deck
-		game_deck = make_deck();
-		discard_deck = new Pile();
+			game_deck = make_deck();
+			discard_deck = new Pile();
+			shuffle_deck(game_deck);
 
 		// check if there are too many players
-		if(game_deck.get_num_cards() < num_players * num_cards) {
-			System.out.printf("You have too many friends\n");
-			setup_input.close();
-			return;
-		}
+			if(game_deck.get_num_cards() < num_players * num_cards) {
+				System.out.printf("You have too many friends\n");
+				setup_input.close();
+				return;
+			}
 
 		// create player array
-		players = new Player[num_players];
+			players = new Player[num_players];
 
-		//players[0] = new GamePlayer(0, num_cards);
-		// TODO remember to add human player
-		for(int i = 0; i < num_players; i++) {
-			players[i] = new Player(i, num_cards);
-		}
+			// populate player array
+			players[0] = new User(0, num_cards);
+			for(int i = 1; i < num_players; i++) {
+				players[i] = new Player(i, num_cards);
+			}
 
-		shuffle_deck(game_deck);
+		
 
 		// Begin game
-		for(int round = 0; round < 1; round++) {
+		for(int round = 0; round < 4; round++) {
 			System.out.printf("===============Round %d===============\n", round);
 			play_round();
-			custom_hand_STRAIGHT_TIE();
 			reveal_hands(players);
 			eval_winner();
 
@@ -73,39 +70,7 @@ public class GameType {
 		return;
 	}
 	
-	private static void custom_hand_STRAIGHT_TIE() {
-		for(int i = 0; i < players.length; i++) {
-			//*
-			// straight
-			players[i].my_hand.cards[0].set_rank(12);
-			players[i].my_hand.cards[1].set_rank(0);
-			players[i].my_hand.cards[2].set_rank(1);
-			players[i].my_hand.cards[3].set_rank(2);
-			players[i].my_hand.cards[4].set_rank(3);
-			/*
-			// random flush
-			players[i].my_hand.cards[0].set_rank(2);
-			players[i].my_hand.cards[0].set_suit(2);
-
-			players[i].my_hand.cards[1].set_rank(0);
-			players[i].my_hand.cards[1].set_suit(2);
-
-			players[i].my_hand.cards[2].set_rank(1);
-			players[i].my_hand.cards[2].set_suit(1);
-
-			players[i].my_hand.cards[3].set_rank(6);
-			players[i].my_hand.cards[3].set_suit(2);
-			
-			players[i].my_hand.cards[4].set_rank(3);
-			players[i].my_hand.cards[4].set_suit(2);
-			//*/
-		}
-		return;
-	}
-	
-	
 	private static Pile make_deck() {
-		//System.out.println("make_deck()");
 		Pile game_deck = new Pile();
 
 		// create a card and then put it into the deck
@@ -119,43 +84,47 @@ public class GameType {
 		return game_deck;
 	}
 	private static void play_round() {
-			round_init(players);
+		round_init(players);
 
-			// For each player allow them to discard
-			for(int i = 0; i < players.length; i++) {
-				Pile discard_pile;
+		// For each player allow them to discard
+		for(int i = 0; i < players.length; i++) {
+			Pile discard_pile;
 
-				discard_pile = players[i].turn(max_discard + ace_exception(players[i]));
-				int num_discarded = discard_pile.get_num_cards();
+			discard_pile = players[i].turn(max_discard + ace_exception(players[i]));
+			int num_discarded = discard_pile.get_num_cards();
 
-				discard_deck.combine(discard_pile);
+			discard_deck.combine(discard_pile);
 
-				System.out.printf("Computer Player %d discarded %d cards\n", players[i].get_player_id(), num_discarded);
-				
-				// deal cards to player until hand is full again
-				while(players[i].get_hand_size() < num_cards) {
-					// if we run out of cards somehow, we 
-					// shuffle the discard deck and use it
+			System.out.printf("Player %d discarded %d cards\n", players[i].get_player_id(), num_discarded);
+			
+			// deal cards to player until hand is full again
+			while(players[i].get_hand_size() < num_cards) {
+				// if we run out of cards somehow, we 
+				// shuffle the discard deck and use it
 
-					if(game_deck.get_num_cards() == 0) {
-						// Shuffle the discard pile
-						discard_deck.shuffle_deck(rng);
-						// Place the shuffled discard pile under the deck
-						game_deck.combine(discard_deck);
-					}
-					// deal a card from the deck
-					players[i].draw_card(game_deck.draw_card());
-					
+				if(game_deck.get_num_cards() == 0) {
+					// Shuffle the discard pile
+					discard_deck.shuffle_deck(rng);
+					// Place the shuffled discard pile under the deck
+					game_deck.combine(discard_deck);
 				}
+				// deal a card from the deck
+				players[i].draw_card(game_deck.draw_card());
+				
 			}
+		}
 	}
 	
 	private static void eval_winner() {
 		int winner = -1;
+		// used in order to catch ties
 		boolean tie = false;
+
+		// catches the highest win combination 
 		boolean first = true;
 		int true_score = -1;
 		int true_high_card = -1;
+
 		do {
 			if(players[0].get_hand_size() == 0)
 				break;
@@ -202,42 +171,45 @@ public class GameType {
 				first = false;
 			}
 		} while(tie);
-			if(tie) {
-				// we can discard the high card and check again(recursive-esque-ly)
-				System.out.printf("Tie!\n");
+		
+		
+		// print out round result
+		if(tie) {
+			// we can discard the high card and check again(recursive-esque-ly)
+			System.out.printf("Tie!\n");
+		}
+		else {
+			System.out.printf("Player %d wins!\n", winner);
+			switch(true_score) {
+				case 21:
+					System.out.printf("Straight Flush!\n");
+					break;
+				case 20:
+					System.out.printf("Four of a Kind!\n");
+					break;
+				case 19:
+					System.out.printf("Full House\n");
+					break;
+				case 18:
+					System.out.printf("Flush!\n");
+					break;
+				case 17:
+					System.out.printf("Straight!\n");
+					break;
+				case 16:
+					System.out.printf("Three of a Kind!\n");
+					break;
+				case 15:
+					System.out.printf("Two Pair!\n");
+					break;
+				case 14:
+					System.out.printf("One Pair!\n");
+					break;
+				default:
+					System.out.printf("High Card: %c!\n", rank_map[true_high_card]);
+					break;
 			}
-			else {
-				System.out.printf("Player %d wins!\n", winner);
-				switch(true_score) {
-					case 21:
-						System.out.printf("Straight Flush!\n");
-						break;
-					case 20:
-						System.out.printf("Four of a Kind!\n");
-						break;
-					case 19:
-						System.out.printf("Full House\n");
-						break;
-					case 18:
-						System.out.printf("Flush!\n");
-						break;
-					case 17:
-						System.out.printf("Straight!\n");
-						break;
-					case 16:
-						System.out.printf("Three of a Kind!\n");
-						break;
-					case 15:
-						System.out.printf("Two Pair!\n");
-						break;
-					case 14:
-						System.out.printf("One Pair!\n");
-						break;
-					default:
-						System.out.printf("High Card: %c!\n", rank_map[true_high_card]);
-						break;
-				}
-			}
+		}
 
 		return;
 	}
@@ -264,7 +236,7 @@ public class GameType {
 			// Place the discard deck under the deck
 			game_deck.combine(discard_deck);
 			// Shuffle the deck 
-			//game_deck.shuffle_deck(rng);
+			game_deck.shuffle_deck(rng);
 		}
 
 		// deal the cards
@@ -276,8 +248,8 @@ public class GameType {
 			}
 		}
 	}
-	private static int ace_exception(Player players) {
-		if(players.count_by_rank('A') > 0) {
+	private static int ace_exception(Player cur_player) {
+		if(cur_player.count_by_rank('A') > 0) {
 			return 1;
 		}
 		return 0;
