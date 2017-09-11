@@ -1,4 +1,3 @@
-package prog1;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -49,8 +48,8 @@ public class Engine {
 			players = new Player[num_players];
 
 			// populate player array
-			//players[0] = new User(0, num_cards);
-			for(int i = 0; i < num_players; i++) {
+			players[0] = new User(0, num_cards);
+			for(int i = 1; i < num_players; i++) {
 				players[i] = new Player(i, num_cards);
 			}
 
@@ -241,8 +240,8 @@ public class Engine {
 	}
 	
 	// shuffles the deck
-	private static void shuffle_deck(Pile game_deck) {
-		game_deck.shuffle_deck(rng);
+	private static void shuffle_deck(Pile deck) {
+		deck.shuffle_deck(rng);
 		return;
 	}
 

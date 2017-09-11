@@ -1,8 +1,6 @@
 // The bot methods are located in this class
 // The bot logic is recycled a lot in order 
 // to aid with score evaluation
-package prog1;
-
 public class Player{
 	protected Hand my_hand; //make private later
 	private int player_id;

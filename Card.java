@@ -1,5 +1,3 @@
-package prog1;
-
 public class Card {
 	
 	private int rank;

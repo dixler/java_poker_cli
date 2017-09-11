@@ -1,4 +1,3 @@
-package prog1;
 import java.util.LinkedList;
 import java.util.Random;
 

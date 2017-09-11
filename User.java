@@ -1,5 +1,3 @@
-package prog1;
-
 import java.util.Scanner;
 
 // TODO rename functions with prefix indicating what it's modifying

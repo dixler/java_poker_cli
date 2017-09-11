@@ -1,5 +1,3 @@
-package prog1;
-
 public class Hand {
 	public Card[] cards;
 	private int num_cards;
