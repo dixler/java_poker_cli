@@ -11,15 +11,18 @@ public class User extends Player{
 		super(id, num_cards);
 		return;
 	}
+	// User interface creates a pile of cards to remove from the hand in a 
+	// manner to emulate the bot discard methods
 	private Pile ui(int max_swaps) {
-		System.out.printf("It's your turn\n");
-		if(my_hand.find_first_rank('A') != -1) {
+		System.out.printf("It's your turn\n\n");
+		if(my_hand.find_first_rank(12) != -1) { // TODO Ace currently hardcoded
 			System.out.printf("You have an Ace so you may hold onto your ace\n"
 							+ "and discard the other cards additional card\n"
 							+ "(discarding the Ace with 4 cards will only\n"
-							+ "discard the first 3 cards");
+							+ "discard the first 3 cards)\n\n");
 		}
-		System.out.printf("Select %d cards(1-%d) to swap then press enter(-1 to keep your hand).\n", max_swaps, my_hand.get_num_cards());
+		System.out.printf("Select %d cards(1-%d) to swap then press \n"
+						+ "enter(-1 to keep your hand).\n\n", max_swaps, my_hand.get_num_cards());
 		ui_display_hand();
 		System.out.printf("Cards to swap: ");
 		// TODO INPUT

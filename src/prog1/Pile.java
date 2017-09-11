@@ -6,32 +6,54 @@ public class Pile {
 	private LinkedList<Card> card_list = new LinkedList<Card>();
 	private int num_cards;
 
+   /*
+    * FUNCTION:   public Pile();
+    * description:   constructor
+    */
 	public Pile() {
 		num_cards = 0;
 		return;
 	}
+   /*
+    * FUNCTION:   public int get_num_cards();
+    * description:   returns the number of cards that are in the player's hand
+    */
 	public int get_num_cards() {
 		return num_cards;
 	}
-	public void place_card(Card new_card){
+   /*
+    * FUNCTION:   public void place_card(Card new_card)();
+    * description:   place the new_card at the top of the deck
+    */
+	public void place_card(Card new_card) {
 		card_list.addFirst(new_card);
 		num_cards += 1;
 		return;
 	}
-	public void place_card_bottom(Card new_card){
+   /*
+    * FUNCTION:   public void place_card_bottom(Card new_card)();
+    * description:   place the new_card at the bottom of the deck
+    */
+	public void place_card_bottom(Card new_card) {
 		card_list.addLast(new_card);
 		num_cards += 1;
 		return;
 	}
 	
-	// get the first card in the Deck(destructive)
-	public Card draw_card(){
+   /*
+    * FUNCTION:   public Card draw_card();
+    * description:   get the first card in the Deck(destructive)
+    */
+	public Card draw_card() {
 		num_cards += -1;
 		return card_list.removeFirst();
 	}
 
-	// moves the cards in the child deck into the parent deck
-	public void combine(Pile child){
+   /*
+    * FUNCTION:   public void combine(Pile child)();
+    * description:   moves the cards in the child deck into the parent deck
+    */
+	public void combine(Pile child) {
 		// 
 		card_list.addAll(child.card_list);
 		// clear old deck
@@ -42,10 +64,19 @@ public class Pile {
 		return;
 	}
 	// starts from 0
+   /*
+    * FUNCTION:   public Card extract_ith_card(int index)();
+    * description:   returns the ith card from the deck
+    */
 	public Card extract_ith_card(int index) {
 		num_cards += -1;
 		return card_list.remove(index);
 	}
+
+   /*
+    * FUNCTION:   public void shuffle_deck(Random rng)();
+    * description:   shuffles the deck
+    */
 	public void shuffle_deck(Random rng) {
 		Pile shuffled = new Pile();
 
@@ -60,6 +91,11 @@ public class Pile {
 		combine(shuffled);
 		return;
 	}
+
+   /*
+    * FUNCTION:   public void print(char[] rank_map, char[] suit_map)();
+    * description:   print the cards according to the rank_map and suit_map
+    */
 	public void print(char[] rank_map, char[] suit_map) {
 		// draw a card, print the card, then put it at the bottom
 		System.out.printf("deck_len: %d\n", num_cards);
@@ -70,7 +106,11 @@ public class Pile {
 		}
 		return;
 	}
-	public void removeAll(){
+   /*
+    * FUNCTION:   public void removeAll();
+    * description:   remove all of the Cards from the Pile
+    */
+	public void removeAll() {
 		card_list.clear();
 		num_cards = 0;
 		return;

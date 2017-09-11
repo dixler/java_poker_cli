@@ -1,9 +1,12 @@
+// The bot methods are located in this class
+// The bot logic is recycled a lot in order 
+// to aid with score evaluation
 package prog1;
 
 public class Player{
 	protected Hand my_hand; //make private later
 	private int player_id;
-	private int win_class = 1;
+	private int player_score = 1;
 	protected Pile discard = new Pile();
 
 
@@ -28,33 +31,38 @@ public class Player{
 	}
    /*
     * FUNCTION:   int get_player_id()
-    * description:   
+    * description:   returns the player's id number
     */
 	public int get_player_id() {
 		return player_id;
 	}
+   /*
+    * FUNCTION:   void draw_card(Card dealt)
+    * description:   adds the drawn card to this.my_hand
+    */
 	public void draw_card(Card dealt) {
 		my_hand.draw(dealt);
 		return;
 	}
    /*
     * FUNCTION:   int get_hand_size()
-    * description:   
+    * description:   returns the number of cards currently in the player's hand
     */
 	public int get_hand_size() {
 		return my_hand.get_num_cards();
 	}
+   /*
+    * FUNCTION:   Card discard(int index)
+    * description:	removes the Card from my_hand.cards[] and returns it.
+    * 				caught by the place_card*() functions to conserve deck size
+    */
 	public Card discard(int index){
 		return my_hand.discard(index);
 	}
 
    /*
     * FUNCTION:   void print_hand()
-    * description:   
-    */
-   /*
-    * FUNCTION:   void print_hand()
-    * description:   
+    * description:   prints the cards in the player's hand
     */
 	public void print_hand() {
 		// draw a card, print the card, then put it at the bottom
@@ -122,19 +130,19 @@ public class Player{
 	
       /*
        * FUNCTION:   int eval_score()
-       * description:   
+       * description:    sets player_score to the value according to his cards(table above)
        */
 	public int eval_score() {
 		int[] pair_to_score = {14, 15, 16, 20, 19};
-		win_class = 1;
+		player_score = 1;
 		if(is_straight(5) && is_flush(5)) {
-			win_class = 21;
+			player_score = 21;
 		}
 		else if(is_straight(5)) {
-			win_class = 17;
+			player_score = 17;
 		}
 		else if(is_flush(5)) {
-			win_class = 18;
+			player_score = 18;
 		}
 
 		// handle rankings based on duplicates
@@ -142,28 +150,28 @@ public class Player{
 		if(pairness > 0) {
 			pairness = pair_to_score[pairness-1];
 		}
-		if(pairness > win_class) {
-			win_class = pairness;
+		if(pairness > player_score) {
+			player_score = pairness;
 		}
 
-		return win_class;
+		return player_score;
 	}
 	
 
 	/*
-	 * FUNCTION:	   int get_win_type()
-	 * description:	used in score resolution
+	 * FUNCTION:	   int get_player_score()
+	 * description:		gets the player's score, but unlike eval_score() it doesn't reevaluate it
 	 */
-	public int get_win_type() {
-		return win_class;
+	public int get_player_score() {
+		return player_score;
 	}
 	/*
 	 * FUNCTION:	   void set_is_loser()
-	 * description:	used in high card resolution(the client can set the win_class to 
+	 * description:	used in high card resolution(the client can set the player_score to 
 	 * 				   negative as a signal to itself)
 	 */
 	public void set_is_loser() {
-		win_class = -1*Math.abs(win_class);
+		player_score = -1*Math.abs(player_score);
 		return;
 	}
 
@@ -265,13 +273,13 @@ public class Player{
    /*
     * FUNCTION:      int is_pair()
     * description:   
-	 *                return values:
-	 * 		         full_house = 5
-	 * 		         four_of_a_kind = 4
-	 * 		         three_of_a_kind = 3
-	 * 		         two_pair = 2
-	 * 		         one_pair = 1
-	 * 		         nothing = 0
+	 *               return values:
+		 * 		         full_house = 5
+		 * 		         four_of_a_kind = 4
+		 * 		         three_of_a_kind = 3
+		 * 		         two_pair = 2
+		 * 		         one_pair = 1
+		 * 		         nothing = 0
 	 */
 	private int is_pair() {
 		int score = 0;
@@ -299,7 +307,7 @@ public class Player{
 	}
    /*
     * FUNCTION:   	int count_by_rank(int rank)
-    * description:	returns number of cards by raw rank
+    * description:	returns number of cards by raw rank can iterate using for loop
     */
 	public int count_by_rank(int rank) {
 		int count = 0;
@@ -372,7 +380,7 @@ public class Player{
 	}
    /*
     * FUNCTION:      int find_lone_suit()
-    * description:   finds the odd card out and returns its raw rank
+    * description:   finds a suit with only one card of its type and returns its index
     */
 	private int find_lone_suit() {
 		int suit_discard = -1;
@@ -394,7 +402,6 @@ public class Player{
    /*
     * FUNCTION:      int find_unpaired()
     * description:   we return an index of an unpaired card(a card with no other cards of the same rank)
-    * notes:         BOT SPECIFIC
     */
 	private int find_unpaired() {
 		int rank_discard = -1;
@@ -429,22 +436,6 @@ public class Player{
          private int handle_four_of_a_kind() {
             return find_unpaired();
          }
-
-   /*
-    * UNIMPLEMENTED
-    *
-	/*
-	public Deck remove_unmatched(int max_swaps) {
-		for(int i = 0; i < max_swaps; i++) {
-			int id_discarded = bot_logic();
-			if(bot_logic() != -1)
-				discard.place_card(my_hand.get_card(id_discarded));
-			else
-				break;
-		}
-		return discard;
-	}
-	*/
 	
    /*
     * FUNCTION:      Card scoring_discard_high_card()
@@ -456,7 +447,7 @@ public class Player{
 
    /*
     * FUNCTION:   int bot_logic()
-    * description:   
+    * description:  returns a card to discard(we loop through this a few times)
     */
 	protected int bot_logic() {
 		int id_discard = -1;
@@ -535,6 +526,10 @@ public class Player{
 		}
 		return id_discard;
 	}
+	/*
+	 * FUNCTION: Pile turn(int max_swaps)
+	 * description: takes the discarded and makes a pile out of it for the Engine class
+	 */
 	public Pile turn(int max_swaps) {
 		for(int i = 0; i < max_swaps; i++) {
 			int id_discarded = bot_logic();

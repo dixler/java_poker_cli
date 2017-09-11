@@ -2,7 +2,7 @@ package prog1;
 import java.util.Random;
 import java.util.Scanner;
 
-public class GameType {
+public class Engine {
 	static private Random rng = new Random();
 	static int num_cards = 5;
 	static int max_discard = 3;
@@ -30,6 +30,8 @@ public class GameType {
 		// create the deck
 			game_deck = make_deck();
 			discard_deck = new Pile();
+
+			System.out.printf("The deck has been shuffled\n\n");
 			shuffle_deck(game_deck);
 
 		// check if there are too many players
@@ -51,25 +53,30 @@ public class GameType {
 		
 
 		// Begin game
-		for(int round = 0; round < 4; round++) {
-			System.out.printf("===============Round %d===============\n", round);
-			play_round();
-			reveal_hands(players);
-			eval_winner();
+			for(int round = 0; round < 4; round++) {
+				System.out.printf("===============Round %d===============\n", round);
+				play_round();
+				reveal_hands(players);
+				eval_winner();
 
-			// Discard the cards for all of the players
-			for(int i = 0; i < num_players; i++) {
-				while(players[i].get_hand_size() > 0) {
-					discard_deck.place_card(players[i].discard(0));
+				// Discard the cards for all of the players
+				for(int i = 0; i < num_players; i++) {
+					while(players[i].get_hand_size() > 0) {
+						discard_deck.place_card(players[i].discard(0));
+					}
 				}
 			}
-		}
-		setup_input.close();
+
 		System.out.printf("Thanks for playing! Exiting...\n");
 
-		return;
+		// tidy up
+			setup_input.close();
+			return;
 	}
 	
+	/*
+	 * Initialize the deck with the rank_map's and suit_map's
+	 */
 	private static Pile make_deck() {
 		Pile game_deck = new Pile();
 
@@ -80,12 +87,12 @@ public class GameType {
 				game_deck.place_card(my_card);
 			}
 		}
-
 		return game_deck;
 	}
+
+	// plays the round. The player has an override that allows for manual control of the turn
 	private static void play_round() {
 		round_init(players);
-
 		// For each player allow them to discard
 		for(int i = 0; i < players.length; i++) {
 			Pile discard_pile;
@@ -95,7 +102,8 @@ public class GameType {
 
 			discard_deck.combine(discard_pile);
 
-			System.out.printf("Player %d discarded %d cards\n", players[i].get_player_id(), num_discarded);
+			if(i != 0) System.out.printf("Player %d discarded %d cards\n", players[i].get_player_id(), num_discarded);
+			else System.out.printf("You discarded %d cards\n", num_discarded);
 			
 			// deal cards to player until hand is full again
 			while(players[i].get_hand_size() < num_cards) {
@@ -107,6 +115,8 @@ public class GameType {
 					discard_deck.shuffle_deck(rng);
 					// Place the shuffled discard pile under the deck
 					game_deck.combine(discard_deck);
+					System.out.printf("The discarded cards have been shuffled and \n"
+									+ "have replenished the deck\n");
 				}
 				// deal a card from the deck
 				players[i].draw_card(game_deck.draw_card());
@@ -115,62 +125,73 @@ public class GameType {
 		}
 	}
 	
+	// after everyone has finished swapping cards, evaluate the winner
+	// works by evaluating who has the highest ranking hand
+	// if there's a tie, we discard the high card and then reevaluate the score
+	// it works because if two people have the same tie, discarding 
+	// one card forces the evaluator to check the next best thing.
 	private static void eval_winner() {
 		int winner = -1;
 		// used in order to catch ties
-		boolean tie = false;
+			boolean tie = false;
 
 		// catches the highest win combination 
-		boolean first = true;
-		int true_score = -1;
-		int true_high_card = -1;
+			boolean first = true;
+			int true_score = -1;
+			int true_high_card = -1;
 
-		do {
-			if(players[0].get_hand_size() == 0)
-				break;
-			int max_score = -1;
-			tie = false;
-			int max_high_card = -1;
-			for(int i = 0; i < players.length; i++) {
-				int cur_score = 0;
-				if(players[i].get_win_type() > 0) {
-					cur_score = players[i].eval_score();
+		// conflict resolution loop
+		// discards and then compares hand score
+			do {
+				if(players[0].get_hand_size() == 0)
+					break;
+				int max_score = -1;
+				tie = false;
+				int max_high_card = -1;
+				for(int i = 0; i < players.length; i++) {
+					int cur_score = 0;
+					if(players[i].get_player_score() > 0) {
+						cur_score = players[i].eval_score();
 
-					if(cur_score > 0) {
-						if(max_score < cur_score) {
-							max_score = cur_score;
-							max_high_card = players[i].get_high_card();
-							winner = i;
-						}
-						else if(max_score == cur_score) {
-							int cur_high_card = players[i].get_high_card();
-							// is the high_card the same?
-							if(max_high_card == cur_high_card) {
-								tie = true;
-							}
-							// ah new high card
-							else if(max_high_card < cur_high_card) {
+						if(cur_score > 0) {
+							if(max_score < cur_score) {
+								max_score = cur_score;
 								max_high_card = players[i].get_high_card();
 								winner = i;
 							}
+							else if(max_score == cur_score) {
+								int cur_high_card = players[i].get_high_card();
+								// is the high_card the same?
+								if(max_high_card == cur_high_card) {
+									// tie is only modified here to true 
+									// if there is actually a tie now after 
+									// removing cards
+									tie = true;
+								}
+								// ah new high card
+								else if(max_high_card < cur_high_card) {
+									max_high_card = players[i].get_high_card();
+									winner = i;
+								}
+								else {
+									// we didn't beat the high card
+									players[i].set_is_loser();
+								}
+							}
 							else {
-								// we didn't beat the high card
 								players[i].set_is_loser();
 							}
 						}
-						else {
-							players[i].set_is_loser();
-						}
 					}
+					discard_deck.place_card(players[i].scoring_discard_high_card());
 				}
-				discard_deck.place_card(players[i].scoring_discard_high_card());
-			}
-			if(first) {
-				true_score = max_score;
-				true_high_card = max_high_card;
-				first = false;
-			}
-		} while(tie);
+			// catch true win(flush, straight, etc.)
+				if(first) {
+					true_score = max_score;
+					true_high_card = max_high_card;
+					first = false;
+				}
+			} while(tie);
 		
 		
 		// print out round result
@@ -179,7 +200,8 @@ public class GameType {
 			System.out.printf("Tie!\n");
 		}
 		else {
-			System.out.printf("Player %d wins!\n", winner);
+			if(winner != 0) System.out.printf("Player %d wins!\n", winner);
+			else System.out.printf("You win!\n");
 			switch(true_score) {
 				case 21:
 					System.out.printf("Straight Flush!\n");
@@ -210,25 +232,27 @@ public class GameType {
 					break;
 			}
 		}
-
 		return;
 	}
 	
+	// shuffles the deck
 	private static void shuffle_deck(Pile game_deck) {
-		System.out.println("shuffle_deck()");
-		
+		//System.out.println("shuffle_deck()");
 		game_deck.shuffle_deck(rng);
-
 		return;
 	}
 
+	// display everyone's hands
 	private static void reveal_hands(Player[] players) {
 		for(int i = 0; i < players.length; i++) {
-			System.out.printf("Player %d's hand':\n", i);
+			if(i != 0) System.out.printf("Player %d's hand':\n", i);
+			else System.out.printf("Your hand':\n");
 			players[i].print_hand();
 		}
 		return;
 	}
+
+	// prepare the game_deck for the next round if we don't have enough cards
 	private static void round_init(Player[] players) {
 		// if we don't have enough cards after the last round
 		// add the discard pile to the deck
@@ -237,9 +261,12 @@ public class GameType {
 			game_deck.combine(discard_deck);
 			// Shuffle the deck 
 			game_deck.shuffle_deck(rng);
+			System.out.printf("The discarded cards have been placed under the \n"
+							+ "deck and the deck has been shuffled\n\n");
 		}
 
 		// deal the cards
+		System.out.printf("Dealing the cards\n");
 		for(int i = 0; i < num_cards; i++) {
 			Card drawn;
 			for(int j = 0; j < players.length; j++) {
@@ -248,11 +275,13 @@ public class GameType {
 			}
 		}
 	}
+
+	//	does the player have an ace
+	//	(returns an integer so we can add this to the number of swaps)
 	private static int ace_exception(Player cur_player) {
 		if(cur_player.count_by_rank('A') > 0) {
 			return 1;
 		}
 		return 0;
-
 	}
 }
