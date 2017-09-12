@@ -490,7 +490,11 @@ public class Player{
 					// we want to keep the highest card
 					// we can get the card's numerical 
 					// rank from the score
-					int kept_card_rank = score - 1;
+               int kept_card_rank = 0;
+               if(has_ace)
+                  kept_card_rank = 12;
+               else
+                  kept_card_rank = score - 1;
 					// handle ace exception
 					// unless we have an Ace
 					if(!has_ace) {
